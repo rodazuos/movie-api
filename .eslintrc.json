@@ -1,8 +1,8 @@
 {
   "root": true,
   "env": {
-    "browser": true,
-    "es2021": true
+    "node": true,
+    "commonjs ": true
   },
   "extends": ["eslint:recommended", "prettier"],
   "parserOptions": {

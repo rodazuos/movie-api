@@ -1,1 +1,5 @@
-console.log("Boilerplate para serviço de backend!");
+const container = require("./src/container");
+
+const server = container.resolve("server");
+
+server.start();
