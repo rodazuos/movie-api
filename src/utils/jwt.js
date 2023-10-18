@@ -16,25 +16,18 @@ const sign = (user) => {
     }
   );
 
-  if (token) {
-    return token.toString().trim();
-  }
-  return null;
+  return token.toString().trim();
 };
 
 const verify = async (token) => {
-  try {
-    if (token.includes("Bearer")) {
-      token = token.split("Bearer")[1].trim();
-    }
-
-    const payload = jwt.verify(token, JWT_KEY);
-    const dataDecrypted = JSON.parse(await decrypt(payload.data));
-
-    return { ...dataDecrypted, iat: payload.iat, exp: payload.exp };
-  } catch (error) {
-    return console.log(error);
+  if (token.includes("Bearer")) {
+    token = token.split("Bearer")[1].trim();
   }
+
+  const payload = jwt.verify(token, JWT_KEY);
+  const dataDecrypted = JSON.parse(await decrypt(payload.data));
+
+  return { ...dataDecrypted, iat: payload.iat, exp: payload.exp };
 };
 
 module.exports = {

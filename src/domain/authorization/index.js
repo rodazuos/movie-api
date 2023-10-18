@@ -1,35 +1,44 @@
 const jwt = require("../../utils/jwt");
+const {
+  NotFoundException,
+  UnauthorizedExcepation,
+  InternalServerException,
+} = require("../../infrastructure/errors");
 const { createHash } = require("crypto");
 
 const getAuthorization = async ({ userRepository, cpf, password }) => {
   const hash = createHash("sha256");
-  try {
-    const user = await userRepository.getByUser(cpf);
-    if (hash.update(password).digest("hex") === user.password) {
+  const user = await userRepository.getByUser(cpf);
+
+  if (!user) {
+    throw NotFoundException("Usuário não encontrado!");
+  }
+
+  if (hash.update(password).digest("hex") === user.password) {
+    try {
       const token = await jwt.sign(user);
+
       const firstAccess = password === "123456";
       return { token, firstAccess };
+    } catch (error) {
+      throw InternalServerException("Erro ao gerar token de acesso!");
     }
-    return false;
-  } catch (error) {
-    console.log(error);
+  } else {
+    throw UnauthorizedExcepation("Usuário não autorizado!");
   }
 };
 
 const validateToken = async ({ userRepository, token }) => {
   try {
     const dataToken = await jwt.verify(token);
-    if (dataToken) {
-      const user = userRepository.getById(dataToken.id, {
-        includeDeleted: false,
-      });
-      if (user) {
-        return true;
-      }
+    const user = await userRepository.getById(dataToken.id, {
+      includeDeleted: false,
+    });
+    if (!user) {
+      throw Error();
     }
-    return false;
   } catch (error) {
-    console.log(error);
+    throw UnauthorizedExcepation("Usuário não autorizado!");
   }
 };
 
