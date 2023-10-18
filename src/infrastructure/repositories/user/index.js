@@ -1,3 +1,5 @@
+const { NotFoundException } = require("../../../infrastructure/errors");
+
 module.exports = (dbContext) => {
   const model = dbContext.models.users;
   const notDeletedClause = { deletedAt: null };
@@ -43,25 +45,40 @@ module.exports = (dbContext) => {
   };
 
   const update = async (userModel) => {
-    const user = await getById(userModel.id, { includeDeleted: true });
-    if (!user) {
-      throw new Error("Usuário não encontrado!");
+    const { Op } = dbContext.sequelize;
+    userModel.updatedAt = dbContext.sequelize.literal("timezone('utc', now())");
+
+    const whereConditions = {
+      [Op.and]: [{ id: userModel.id }, notDeletedClause],
+    };
+    const userToUpdated = await model.findOne({ where: whereConditions });
+    if (!userToUpdated) {
+      throw NotFoundException("Usuário não encontrado!");
     }
 
-    const { cpf, ...userValues } = userModel;
-    await model.update(userValues, { where: { cpf } });
-    return getByCpf(cpf);
+    const { dataValues } = await userToUpdated.update(userModel);
+    return dataValues;
   };
 
   const updatePassword = async (userModel) => {
-    const user = await getById(userModel.id, { includeDeleted: false });
-    if (!user) {
-      throw new Error("Usuário não encontrado!");
+    const { Op } = dbContext.sequelize;
+    userModel.updatedAt = dbContext.sequelize.literal("timezone('utc', now())");
+
+    const whereConditions = {
+      [Op.and]: [{ id: userModel.id }, notDeletedClause],
+    };
+    const userToUpdated = await model.findOne({ where: whereConditions });
+    if (!userToUpdated) {
+      throw NotFoundException("Usuário não encontrado!");
     }
 
-    const { cpf, ...userValues } = userModel;
-    await model.update(userValues, { where: { id: userModel.id } });
-    return true;
+    const user = await getById(userModel.id, { includeDeleted: false });
+    if (!user) {
+      throw NotFoundException("Usuário não encontrado!");
+    }
+
+    const { dataValues } = await userToUpdated.update(userModel);
+    return dataValues;
   };
 
   const logicDeleteById = async (id) => {
@@ -71,7 +88,7 @@ module.exports = (dbContext) => {
     });
 
     if (!entity) {
-      return null;
+      throw NotFoundException("Usuário não encontrado!");
     }
 
     const { dataValues } = await entity.update({

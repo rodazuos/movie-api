@@ -40,7 +40,7 @@ module.exports = ({
     userController.createUser
   );
   router.put(
-    "/v1/user",
+    "/v1/user/:id",
     verifyAuthenticationMiddleware.verifyAuthentication,
     adminAuthorizationMiddleare.adminAuthorization,
     userController.updateUser
@@ -60,16 +60,19 @@ module.exports = ({
   router.post(
     "/v1/movie",
     verifyAuthenticationMiddleware.verifyAuthentication,
+    adminAuthorizationMiddleare.adminAuthorization,
     movieController.createMovie
   );
   router.put(
     "/v1/movie",
     verifyAuthenticationMiddleware.verifyAuthentication,
+    adminAuthorizationMiddleare.adminAuthorization,
     movieController.updateMovie
   );
   router.delete(
     "/v1/movie/:id",
     verifyAuthenticationMiddleware.verifyAuthentication,
+    adminAuthorizationMiddleare.adminAuthorization,
     movieController.deleteMovie
   );
 
@@ -78,6 +81,7 @@ module.exports = ({
     verifyAuthenticationMiddleware.verifyAuthentication,
     movieController.listMovies
   );
+
   router.post(
     "/v1/movie/vote",
     verifyAuthenticationMiddleware.verifyAuthentication,
