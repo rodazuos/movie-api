@@ -16,6 +16,7 @@ const returnUserData = (user) => {
     typeAccount: user.typeAccount,
     cpf: user.cpf,
     name: user.name,
+    isActive: user.deletedAt === null
   };
 };
 

@@ -1,3 +1,4 @@
+const { UNAUTHORIZED } = require('http-status');
 const { TYPE_ACCOUNT_ENUM } = require("../../../domain/user");
 
 module.exports = () => {
@@ -10,7 +11,7 @@ module.exports = () => {
     ) {
       return next();
     }
-    return (ctx.status = 401);
+    ctx.status = UNAUTHORIZED;
   };
 
   return { adminAuthorization };
