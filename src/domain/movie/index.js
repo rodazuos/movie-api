@@ -1,5 +1,20 @@
 const { NotFoundException, ConflictException } = require('../../infrastructure/errors');
 
+const returnMovieData = (movie) => {
+  return {
+    id: movie.id,
+    title: movie.title,
+    originalTitle: movie.originalTitle,
+    releaseYear: movie.releaseYear,
+    ageGroup: movie.ageGroup,
+    duration: movie.duration,
+    description: movie.description,
+    poster: movie.poster,
+    lastUpdated: movie.updateAt || movie.createdAt,
+    isActive: movie.deletedAt === null
+  };
+};
+
 const createMovie = async ({ movieRepository, movie }) => {
   const movieExists = await movieRepository.getByFilters({ title: movie.title, originalTitle: movie.originalTitle });
   if (movieExists) {
@@ -7,7 +22,7 @@ const createMovie = async ({ movieRepository, movie }) => {
   }
 
   const result = await movieRepository.create({ ...movie });
-  return result;
+  return returnMovieData(result);
 };
 
 const getMovie = async ({ movieRepository, id }) => {
@@ -19,7 +34,7 @@ const getMovie = async ({ movieRepository, id }) => {
     throw NotFoundException('Filme não encontrado!');
   }
 
-  return movie;
+  return returnMovieData(movie);
 };
 
 const updateMovie = async ({ movieRepository, movie }) => {
@@ -29,7 +44,7 @@ const updateMovie = async ({ movieRepository, movie }) => {
     throw NotFoundException('Filme não encontrado!');
   }
 
-  return result;
+  return returnMovieData(result);
 };
 
 const deleteMovie = async ({ movieRepository, id }) => {
@@ -39,7 +54,7 @@ const deleteMovie = async ({ movieRepository, id }) => {
     throw NotFoundException('Filme não encontrado!');
   }
 
-  return result;
+  return returnMovieData(result);
 };
 
 module.exports = {
