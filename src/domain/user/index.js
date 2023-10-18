@@ -1,13 +1,15 @@
 const { createHash } = require("crypto");
 const hash = createHash("sha256");
 
-const typeAccount = Object.freeze({
+const TYPE_ACCOUNT_ENUM = Object.freeze({
   ADMIN: 1,
   USER: 2,
   ADMIN_USER: 3,
 });
 
 const createUser = async ({ userRepository, user }) => {
+  user.password = hash.update("123456").digest("hex");
+
   try {
     const creationResult = await userRepository.create({ ...user });
     return creationResult;
@@ -16,9 +18,18 @@ const createUser = async ({ userRepository, user }) => {
   }
 };
 
-const getByUser = async ({ userRepository, id }) => {
+const getUserById = async ({ userRepository, id, includeDeleted = true }) => {
   try {
-    const user = await userRepository.getById(id, { includeDeleted: true });
+    const user = await userRepository.getById(id, { includeDeleted });
+    return user;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const getUserByCPF = async ({ userRepository, cpf }) => {
+  try {
+    const user = await userRepository.getByUser(cpf);
     return user;
   } catch (error) {
     console.log(error);
@@ -43,10 +54,21 @@ const deleteUser = async ({ userRepository, id }) => {
   }
 };
 
+const updatePassword = async ({ userRepository, id, password }) => {
+  try {
+    const user = { id, password: hash.update(password).digest("hex") };
+    return userRepository.updatePassword(user);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 module.exports = {
-  typeAccount,
+  TYPE_ACCOUNT_ENUM,
   createUser,
-  getByUser,
+  getUserById,
+  getUserByCPF,
   updateUser,
   deleteUser,
+  updatePassword,
 };

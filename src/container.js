@@ -7,6 +7,9 @@ const authenticationController = require("./application/api/controllers/authenti
 const userController = require("./application/api/controllers/v1/user");
 const movieController = require("./application/api/controllers/v1/movies");
 
+const verifyAuthenticationMiddleware = require("./application/api/middlewares/verifyAuthentication");
+const adminAuthorizationMiddleare = require("./application/api/middlewares/adminAutorization");
+
 const dbContextFactory = require("./infrastructure/database");
 const repositories = require("./infrastructure/repositories");
 
@@ -22,6 +25,13 @@ container.register({
   authenticationController: asFunction(authenticationController).singleton(),
   userController: asFunction(userController).singleton(),
   movieController: asFunction(movieController).singleton(),
+
+  verifyAuthenticationMiddleware: asFunction(
+    verifyAuthenticationMiddleware
+  ).singleton(),
+  adminAuthorizationMiddleare: asFunction(
+    adminAuthorizationMiddleare
+  ).singleton(),
 });
 
 module.exports = container;

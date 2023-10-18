@@ -13,6 +13,19 @@ module.exports = (dbContext) => {
     return dataValues;
   };
 
+  const getByUser = async (cpf) => {
+    const { Op } = dbContext.sequelize;
+    const whereConditions = { [Op.and]: [{ cpf }, notDeletedClause] };
+    const queryResult = await model.findOne({ where: whereConditions });
+
+    if (!queryResult) {
+      return null;
+    }
+
+    const { dataValues } = queryResult;
+    return dataValues;
+  };
+
   const getById = async (id, { includeDeleted = false } = {}) => {
     const { Op } = dbContext.sequelize;
     const whereConditions = includeDeleted
@@ -40,6 +53,17 @@ module.exports = (dbContext) => {
     return getByCpf(cpf);
   };
 
+  const updatePassword = async (userModel) => {
+    const user = await getById(userModel.id, { includeDeleted: false });
+    if (!user) {
+      throw new Error("Usuário não encontrado!");
+    }
+
+    const { cpf, ...userValues } = userModel;
+    await model.update(userValues, { where: { id: userModel.id } });
+    return true;
+  };
+
   const logicDeleteById = async (id) => {
     const { Op } = dbContext.sequelize;
     const entity = await model.findOne({
@@ -60,7 +84,9 @@ module.exports = (dbContext) => {
   return {
     create,
     getById,
+    getByUser,
     logicDeleteById,
     update,
+    updatePassword,
   };
 };

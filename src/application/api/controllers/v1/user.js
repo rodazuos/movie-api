@@ -1,126 +1,122 @@
 const UserDomain = require("../../../../domain/user");
-const jwt = require("../../../../utils/jwt");
-
-const { createHash } = require("crypto");
-const hash = createHash("sha256");
 
 module.exports = ({ repository }) => {
   const { userRepository } = repository;
 
+  const getUserProfile = async (ctx) => {
+    const { id } = ctx.request.userState;
+    const result = await UserDomain.getUserById({ userRepository, id });
+    if (result) {
+      ctx.status = 200;
+      ctx.body = {
+        id: result.id,
+        typeAccount: result.typeAccount,
+        cpf: result.cpf,
+        name: result.name,
+      };
+      return;
+    }
+
+    return (ctx.status = 500);
+  };
+
   const getUser = async (ctx) => {
     const { id } = ctx.request.params;
-    const token = ctx.request.headers["authorization"];
-
-    const tokenInfo = await jwt.verify(token);
-
-    if (
-      [
-        UserDomain.typeAccount.ADMIN,
-        UserDomain.typeAccount.ADMIN_USER,
-      ].includes(tokenInfo.typeAccount)
-    ) {
-      const result = await UserDomain.getByUser({ userRepository, id });
-      if (result) {
-        ctx.status = 200;
-        ctx.body = result;
-      } else {
-        ctx.status = 500;
-      }
-    } else {
-      ctx.status = 401;
+    const result = await UserDomain.getUserById({ userRepository, id });
+    if (result) {
+      ctx.status = 200;
+      ctx.body = {
+        id: result.id,
+        typeAccount: result.typeAccount,
+        cpf: result.cpf,
+        name: result.name,
+      };
+      return;
     }
+
+    return (ctx.status = 500);
   };
 
   const createUser = async (ctx) => {
-    const { typeAccount, cpf, name, password } = ctx.request.body;
-    const token = ctx.request.headers["authorization"];
+    const { typeAccount, cpf, name } = ctx.request.body;
+    const user = {
+      typeAccount,
+      cpf,
+      name,
+    };
 
-    const tokenInfo = await jwt.verify(token);
-
-    if (
-      [
-        UserDomain.typeAccount.ADMIN,
-        UserDomain.typeAccount.ADMIN_USER,
-      ].includes(tokenInfo.typeAccount)
-    ) {
-      const user = {
-        typeAccount,
-        cpf,
-        name,
-        password: hash.update(password).digest("hex"),
-      };
-
-      const resultCreate = await UserDomain.createUser({
-        userRepository,
-        user,
-      });
-      if (resultCreate) {
-        ctx.status = 200;
-        ctx.body = "Usuário criado com sucesso!";
-      } else {
-        ctx.status = 500;
-      }
-    } else {
-      ctx.status = 401;
+    const result = await UserDomain.createUser({
+      userRepository,
+      user,
+    });
+    if (result) {
+      ctx.status = 201;
+      ctx.body = "Usuário criado com sucesso!";
+      return;
     }
+
+    return (ctx.status = 500);
   };
 
   const updateUser = async (ctx) => {
     const { typeAccount, cpf, name } = ctx.request.body;
-    const token = ctx.request.headers["authorization"];
 
-    const tokenInfo = await jwt.verify(token);
+    const user = {
+      typeAccount,
+      cpf,
+      name,
+    };
 
-    if (
-      [
-        UserDomain.typeAccount.ADMIN,
-        UserDomain.typeAccount.ADMIN_USER,
-      ].includes(tokenInfo.typeAccount)
-    ) {
-      const user = {
-        typeAccount,
-        cpf,
-        name,
-      };
-
-      const resultUpdate = await UserDomain.updateUser({
-        userRepository,
-        user,
-      });
-      if (resultUpdate) {
-        ctx.status = 200;
-        ctx.body = "Usuário atualizado com sucesso!";
-      } else {
-        ctx.status = 500;
-      }
-    } else {
-      ctx.status = 401;
+    const result = await UserDomain.updateUser({
+      userRepository,
+      user,
+    });
+    if (result) {
+      ctx.status = 204;
+      ctx.body = "Usuário atualizado com sucesso!";
+      return;
     }
+
+    return (ctx.status = 500);
   };
 
   const deleteUser = async (ctx) => {
     const { id } = ctx.request.params;
 
-    const token = ctx.request.headers["authorization"];
-    const tokenInfo = await jwt.verify(token);
-
-    if (
-      [
-        UserDomain.typeAccount.ADMIN,
-        UserDomain.typeAccount.ADMIN_USER,
-      ].includes(tokenInfo.typeAccount)
-    ) {
-      const resultDelete = await UserDomain.deleteUser({ userRepository, id });
-      if (resultDelete) {
-        ctx.status = 200;
-        ctx.body = "Usuário deletado com sucesso!";
-      } else {
-        ctx.status = 500;
-      }
-    } else {
-      ctx.status = 401;
+    const result = await UserDomain.deleteUser({ userRepository, id });
+    if (result) {
+      ctx.status = 204;
+      ctx.body = "Usuário deletado com sucesso!";
+      return;
     }
+
+    return (ctx.status = 500);
   };
 
-  return { getUser, createUser, updateUser, deleteUser };
+  const updatePassword = async (ctx) => {
+    const { password } = ctx.request.body;
+    const { id } = ctx.request.userState;
+
+    const result = await UserDomain.updatePassword({
+      userRepository,
+      id,
+      password,
+    });
+    if (result) {
+      ctx.status = 204;
+      ctx.body = "Senha alterada com sucesso!";
+      return;
+    }
+
+    return (ctx.status = 500);
+  };
+
+  return {
+    getUserProfile,
+    getUser,
+    createUser,
+    updateUser,
+    deleteUser,
+    updatePassword,
+  };
 };

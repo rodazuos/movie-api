@@ -8,7 +8,6 @@ const createMovie = async ({ movieRepository, movie }) => {
 };
 
 const getMovie = async ({ movieRepository, id }) => {
-  console.log(id);
   try {
     const movie = await movieRepository.getById(id, {
       includeDeleted: true,
