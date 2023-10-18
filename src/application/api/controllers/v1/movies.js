@@ -1,45 +1,24 @@
-const { typeAccount } = require("../../../../domain/user");
-const MovieDomain = require("../../../../domain/movie");
-const jwt = require("../../../../utils/jwt");
+const { OK } = require('http-status');
+const MovieDomain = require('../../../../domain/movie');
 
 module.exports = ({ repository }) => {
   const { movieRepository } = repository;
 
   const getMovie = async (ctx) => {
-    const { id } = ctx.request.params;
-    const token = ctx.request.headers["authorization"];
-    const tokenInfo = await jwt.verify(token);
-    if (tokenInfo) {
+    try {
+      const { id } = ctx.request.params;
       const result = await MovieDomain.getMovie({ movieRepository, id });
-      if (result) {
-        ctx.status = 200;
-        ctx.body = result;
-      } else {
-        ctx.status = 500;
-      }
-    } else {
-      ctx.status = 401;
+      ctx.status = OK;
+      ctx.body = result;
+    } catch (error) {
+      throw error;
     }
   };
 
   const createMovie = async (ctx) => {
-    const {
-      title,
-      originalTitle,
-      releaseYear,
-      ageGroup,
-      duration,
-      description,
-      poster,
-    } = ctx.request.body;
-    const token = ctx.request.headers["authorization"];
-    const tokenInfo = await jwt.verify(token);
+    try {
+      const { title, originalTitle, releaseYear, ageGroup, duration, description, poster } = ctx.request.body;
 
-    if (
-      [typeAccount.ADMIN, typeAccount.ADMIN_USER].includes(
-        tokenInfo.typeAccount
-      )
-    ) {
       const movie = {
         title,
         originalTitle,
@@ -47,44 +26,26 @@ module.exports = ({ repository }) => {
         ageGroup,
         duration,
         description,
-        poster,
+        poster
       };
 
-      const resultCreate = await MovieDomain.createMovie({
+      const result = await MovieDomain.createMovie({
         movieRepository,
-        movie,
+        movie
       });
-      if (resultCreate) {
-        ctx.status = 200;
-        ctx.body = "Filme criado com sucesso!";
-      } else {
-        ctx.status = 500;
-      }
-    } else {
-      ctx.status = 401;
+
+      ctx.status = OK;
+      ctx.body = result;
+    } catch (error) {
+      throw error;
     }
   };
 
   const updateMovie = async (ctx) => {
-    const {
-      id,
-      title,
-      originalTitle,
-      releaseYear,
-      ageGroup,
-      duration,
-      description,
-      poster,
-    } = ctx.request.body;
+    try {
+      const { id } = ctx.request.params;
+      const { title, originalTitle, releaseYear, ageGroup, duration, description, poster } = ctx.request.body;
 
-    const token = ctx.request.headers["authorization"];
-    const tokenInfo = await jwt.verify(token);
-
-    if (
-      [typeAccount.ADMIN, typeAccount.ADMIN_USER].includes(
-        tokenInfo.typeAccount
-      )
-    ) {
       const movie = {
         id,
         title,
@@ -93,56 +54,45 @@ module.exports = ({ repository }) => {
         ageGroup,
         duration,
         description,
-        poster,
+        poster
       };
 
-      const resultUpdate = await MovieDomain.updateMovie({
+      const result = await MovieDomain.updateMovie({
         movieRepository,
-        movie,
+        movie
       });
-      if (resultUpdate) {
-        ctx.status = 200;
-        ctx.body = "Filme atualizado com sucesso!";
-      } else {
-        ctx.status = 500;
-      }
-    } else {
-      ctx.status = 401;
+
+      ctx.status = OK;
+      ctx.body = result;
+    } catch (error) {
+      throw error;
     }
   };
 
   const deleteMovie = async (ctx) => {
-    const { id } = ctx.request.params;
-
-    const token = ctx.request.headers["authorization"];
-    const tokenInfo = await jwt.verify(token);
-
-    if (
-      [typeAccount.ADMIN, typeAccount.ADMIN_USER].includes(
-        tokenInfo.typeAccount
-      )
-    ) {
-      const resultDelete = await MovieDomain.deleteMovie({
-        movieRepository,
-        id,
-      });
-      if (resultDelete) {
-        ctx.status = 200;
-        ctx.body = "Filme deletado com sucesso!";
-      } else {
-        ctx.status = 500;
-      }
-    } else {
-      ctx.status = 401;
+    try {
+      const { id } = ctx.request.params;
+      await MovieDomain.deleteMovie({ movieRepository, id });
+      ctx.status = OK;
+    } catch (error) {
+      throw error;
     }
   };
 
   const voteMovie = async (ctx) => {
-    ctx.status = 200;
+    try {
+      ctx.status = OK;
+    } catch (error) {
+      throw error;
+    }
   };
 
   const listMovies = async (ctx) => {
-    ctx.status = 200;
+    try {
+      ctx.status = OK;
+    } catch (error) {
+      throw error;
+    }
   };
 
   return {
@@ -151,6 +101,6 @@ module.exports = ({ repository }) => {
     updateMovie,
     deleteMovie,
     voteMovie,
-    listMovies,
+    listMovies
   };
 };

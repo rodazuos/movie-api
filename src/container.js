@@ -1,17 +1,17 @@
-const { asFunction, createContainer } = require("awilix");
+const { asFunction, createContainer } = require('awilix');
 
-const serverFactory = require("./application/server");
-const routerFactory = require("./application/router");
+const serverFactory = require('./application/server');
+const routerFactory = require('./application/router');
 
-const authenticationController = require("./application/api/controllers/authentication");
-const userController = require("./application/api/controllers/v1/user");
-const movieController = require("./application/api/controllers/v1/movies");
+const authenticationController = require('./application/api/controllers/authentication');
+const userController = require('./application/api/controllers/v1/user');
+const movieController = require('./application/api/controllers/v1/movies');
 
-const verifyAuthenticationMiddleware = require("./application/api/middlewares/verifyAuthentication");
-const adminAuthorizationMiddleare = require("./application/api/middlewares/adminAutorization");
+const verifyAuthenticationMiddleware = require('./application/api/middlewares/verifyAuthentication');
+const adminAuthorizationMiddleare = require('./application/api/middlewares/adminAutorization');
 
-const dbContextFactory = require("./infrastructure/database");
-const repositories = require("./infrastructure/repositories");
+const dbContextFactory = require('./infrastructure/database');
+const repositories = require('./infrastructure/repositories');
 
 const container = createContainer();
 
@@ -26,12 +26,8 @@ container.register({
   userController: asFunction(userController).singleton(),
   movieController: asFunction(movieController).singleton(),
 
-  verifyAuthenticationMiddleware: asFunction(
-    verifyAuthenticationMiddleware
-  ).singleton(),
-  adminAuthorizationMiddleare: asFunction(
-    adminAuthorizationMiddleare
-  ).singleton(),
+  verifyAuthenticationMiddleware: asFunction(verifyAuthenticationMiddleware).singleton(),
+  adminAuthorizationMiddleare: asFunction(adminAuthorizationMiddleare).singleton()
 });
 
 module.exports = container;

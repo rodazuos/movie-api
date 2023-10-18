@@ -1,12 +1,12 @@
-require("dotenv").config();
+require('dotenv').config();
 
-const koa = require("koa");
-const bodyParser = require("koa-bodyparser");
+const koa = require('koa');
+const bodyParser = require('koa-bodyparser');
 
 module.exports = ({ router }) => {
   const app = new koa();
 
-  app.use(bodyParser({ enableTypes: ["json"] })).use(router.routes());
+  app.use(bodyParser({ enableTypes: ['json'] })).use(router.routes());
 
   return {
     app,
@@ -16,11 +16,9 @@ module.exports = ({ router }) => {
           console.log(`App running in port: ${process.env.PORT}`);
         });
       } catch (error) {
-        console.log(
-          `Problem to initializing application dependencies: ${error}`
-        );
+        console.log(`Problem to initializing application dependencies: ${error}`);
         process.exit(1);
       }
-    },
+    }
   };
 };

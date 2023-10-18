@@ -1,92 +1,75 @@
-const Router = require("@koa/router");
+const Router = require('@koa/router');
 
 module.exports = ({
   authenticationController,
   userController,
   movieController,
   verifyAuthenticationMiddleware,
-  adminAuthorizationMiddleare,
+  adminAuthorizationMiddleare
 }) => {
   const router = new Router();
 
-  router.get("/healthcheck", (ctx) => {
-    ctx.body = "Application running. Healthcheck OK!";
+  router.get('/healthcheck', (ctx) => {
+    ctx.body = 'Application running. Healthcheck OK!';
   });
 
-  router.post("/login", authenticationController.login);
-  router.post("/verifyToken", authenticationController.isValidToken);
+  router.post('/login', authenticationController.login);
+  router.post('/verifyToken', authenticationController.isValidToken);
 
-  router.get(
-    "/v1/user/myProfile",
-    verifyAuthenticationMiddleware.verifyAuthentication,
-    userController.getUserProfile
-  );
+  router.get('/v1/user/myProfile', verifyAuthenticationMiddleware.verifyAuthentication, userController.getUserProfile);
   router.post(
-    "/v1/user/updatePassword",
+    '/v1/user/updatePassword',
     verifyAuthenticationMiddleware.verifyAuthentication,
     userController.updatePassword
   );
 
   router.get(
-    "/v1/user/:id",
+    '/v1/user/:id',
     verifyAuthenticationMiddleware.verifyAuthentication,
     adminAuthorizationMiddleare.adminAuthorization,
     userController.getUser
   );
   router.post(
-    "/v1/user",
+    '/v1/user',
     verifyAuthenticationMiddleware.verifyAuthentication,
     adminAuthorizationMiddleare.adminAuthorization,
     userController.createUser
   );
   router.put(
-    "/v1/user/:id",
+    '/v1/user/:id',
     verifyAuthenticationMiddleware.verifyAuthentication,
     adminAuthorizationMiddleare.adminAuthorization,
     userController.updateUser
   );
   router.delete(
-    "/v1/user/:id",
+    '/v1/user/:id',
     verifyAuthenticationMiddleware.verifyAuthentication,
     adminAuthorizationMiddleare.adminAuthorization,
     userController.deleteUser
   );
 
-  router.get(
-    "/v1/movie/:id",
-    verifyAuthenticationMiddleware.verifyAuthentication,
-    movieController.getMovie
-  );
+  router.get('/v1/movie/:id', verifyAuthenticationMiddleware.verifyAuthentication, movieController.getMovie);
   router.post(
-    "/v1/movie",
+    '/v1/movie',
     verifyAuthenticationMiddleware.verifyAuthentication,
     adminAuthorizationMiddleare.adminAuthorization,
     movieController.createMovie
   );
   router.put(
-    "/v1/movie",
+    '/v1/movie/:id',
     verifyAuthenticationMiddleware.verifyAuthentication,
     adminAuthorizationMiddleare.adminAuthorization,
     movieController.updateMovie
   );
   router.delete(
-    "/v1/movie/:id",
+    '/v1/movie/:id',
     verifyAuthenticationMiddleware.verifyAuthentication,
     adminAuthorizationMiddleare.adminAuthorization,
     movieController.deleteMovie
   );
 
-  router.get(
-    "/v1/movie/list",
-    verifyAuthenticationMiddleware.verifyAuthentication,
-    movieController.listMovies
-  );
-
-  router.post(
-    "/v1/movie/vote",
-    verifyAuthenticationMiddleware.verifyAuthentication,
-    movieController.voteMovie
-  );
+  router.get('/v1/movies/list', verifyAuthenticationMiddleware.verifyAuthentication, movieController.listMovies);
+  router.post('/v1/movie/:id/vote', verifyAuthenticationMiddleware.verifyAuthentication, movieController.voteMovie);
 
   return router;
 };

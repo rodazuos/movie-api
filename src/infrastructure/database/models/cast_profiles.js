@@ -1,38 +1,38 @@
 module.exports = (sequelize, DataTypes) => {
   const CastProfiles = sequelize.define(
-    "cast_profiles",
+    'cast_profiles',
     {
       id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         allowNull: false,
-        autoIncrement: true,
+        autoIncrement: true
       },
       description: {
-        field: "description",
+        field: 'description',
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: false
       },
       createdAt: {
-        field: "created_at",
+        field: 'created_at',
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: sequelize.literal("timezone('utc', now())"),
+        defaultValue: sequelize.literal("timezone('utc', now())")
       },
       updatedAt: {
-        field: "updated_at",
+        field: 'updated_at',
         type: DataTypes.DATE,
-        allowNull: true,
+        allowNull: true
       },
       deletedAt: {
-        field: "deleted_at",
+        field: 'deleted_at',
         type: DataTypes.DATE,
-        allowNull: true,
-      },
+        allowNull: true
+      }
     },
     {
       freezeTableName: true,
-      timestamps: false,
+      timestamps: false
     }
   );
 

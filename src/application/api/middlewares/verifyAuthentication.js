@@ -1,28 +1,28 @@
-const { UnauthorizedExcepation } = require("../../../infrastructure/errors");
-const jwt = require("../../../utils/jwt");
-const UserDomain = require("../../../domain/user");
+const { UnauthorizedExcepation } = require('../../../infrastructure/errors');
+const jwt = require('../../../utils/jwt');
+const UserDomain = require('../../../domain/user');
 
 module.exports = ({ repository }) => {
   const { userRepository } = repository;
 
   const verifyAuthentication = async (ctx, next) => {
     try {
-      const token = ctx.request.headers["authorization"];
+      const token = ctx.request.headers['authorization'];
       const validToken = await jwt.verify(token);
 
       await UserDomain.getUserById({
         userRepository,
         id: validToken.id,
-        includeDeleted: false,
+        includeDeleted: false
       });
 
       ctx.request.userState = {
         id: validToken.id,
-        typeAccount: validToken.typeAccount,
+        typeAccount: validToken.typeAccount
       };
       return next();
     } catch (error) {
-      throw UnauthorizedExcepation("Usuário não autorizado!");
+      throw UnauthorizedExcepation('Usuário não autorizado!');
     }
   };
 

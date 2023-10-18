@@ -1,5 +1,5 @@
-const { OK } = require("http-status");
-const AuthorizationDomain = require("../../../domain/authorization");
+const { OK } = require('http-status');
+const AuthorizationDomain = require('../../../domain/authorization');
 
 module.exports = ({ repository }) => {
   const { userRepository } = repository;
@@ -11,7 +11,7 @@ module.exports = ({ repository }) => {
       const result = await AuthorizationDomain.getAuthorization({
         userRepository,
         cpf,
-        password,
+        password
       });
 
       ctx.status = OK;
@@ -27,7 +27,7 @@ module.exports = ({ repository }) => {
 
       await AuthorizationDomain.validateToken({
         userRepository,
-        token,
+        token
       });
 
       ctx.status = OK;

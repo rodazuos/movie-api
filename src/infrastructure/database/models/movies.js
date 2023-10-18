@@ -1,68 +1,68 @@
 module.exports = (sequelize, DataTypes) => {
   const Movies = sequelize.define(
-    "movies",
+    'movies',
     {
       id: {
         type: DataTypes.BIGINT,
         primaryKey: true,
         allowNull: false,
-        autoIncrement: true,
+        autoIncrement: true
       },
       title: {
-        field: "title",
+        field: 'title',
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: false
       },
       originalTitle: {
-        field: "original_title",
+        field: 'original_title',
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: false
       },
       releaseYear: {
-        field: "release_year",
+        field: 'release_year',
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: false
       },
       ageGroup: {
-        field: "age_group",
+        field: 'age_group',
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: false
       },
       duration: {
-        field: "duration",
+        field: 'duration',
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: false
       },
       description: {
-        field: "description",
+        field: 'description',
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: false
       },
       poster: {
-        field: "poster",
+        field: 'poster',
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: false
       },
       createdAt: {
-        field: "created_at",
+        field: 'created_at',
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: sequelize.literal("timezone('utc', now())"),
+        defaultValue: sequelize.literal("timezone('utc', now())")
       },
       updatedAt: {
-        field: "updated_at",
+        field: 'updated_at',
         type: DataTypes.DATE,
-        allowNull: true,
+        allowNull: true
       },
       deletedAt: {
-        field: "deleted_at",
+        field: 'deleted_at',
         type: DataTypes.DATE,
-        allowNull: true,
-      },
+        allowNull: true
+      }
     },
     {
       freezeTableName: true,
-      timestamps: false,
+      timestamps: false
     }
   );
 

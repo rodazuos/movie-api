@@ -1,53 +1,53 @@
 module.exports = (sequelize, DataTypes) => {
   const Users = sequelize.define(
-    "users",
+    'users',
     {
       id: {
         type: DataTypes.BIGINT,
         primaryKey: true,
         allowNull: false,
-        autoIncrement: true,
+        autoIncrement: true
       },
       typeAccount: {
-        field: "type_account",
+        field: 'type_account',
         type: DataTypes.INTEGER,
-        allowNull: false,
+        allowNull: false
       },
       cpf: {
-        field: "cpf",
+        field: 'cpf',
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: false
       },
       name: {
-        field: "name",
+        field: 'name',
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: false
       },
       password: {
-        field: "password",
+        field: 'password',
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: false
       },
       createdAt: {
-        field: "created_at",
+        field: 'created_at',
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: sequelize.literal("timezone('utc', now())"),
+        defaultValue: sequelize.literal("timezone('utc', now())")
       },
       updatedAt: {
-        field: "updated_at",
+        field: 'updated_at',
         type: DataTypes.DATE,
-        allowNull: true,
+        allowNull: true
       },
       deletedAt: {
-        field: "deleted_at",
+        field: 'deleted_at',
         type: DataTypes.DATE,
-        allowNull: true,
-      },
+        allowNull: true
+      }
     },
     {
       freezeTableName: true,
-      timestamps: false,
+      timestamps: false
     }
   );
 

@@ -1,5 +1,5 @@
-const { OK } = require("http-status");
-const UserDomain = require("../../../../domain/user");
+const { OK } = require('http-status');
+const UserDomain = require('../../../../domain/user');
 
 module.exports = ({ repository }) => {
   const { userRepository } = repository;
@@ -36,12 +36,12 @@ module.exports = ({ repository }) => {
       const user = {
         typeAccount,
         cpf,
-        name,
+        name
       };
 
       const result = await UserDomain.createUser({
         userRepository,
-        user,
+        user
       });
 
       ctx.status = OK;
@@ -60,12 +60,12 @@ module.exports = ({ repository }) => {
         id,
         typeAccount,
         cpf,
-        name,
+        name
       };
 
       const result = await UserDomain.updateUser({
         userRepository,
-        user,
+        user
       });
 
       ctx.status = OK;
@@ -93,7 +93,7 @@ module.exports = ({ repository }) => {
       await UserDomain.updatePassword({
         userRepository,
         id,
-        password,
+        password
       });
 
       ctx.status = OK;
@@ -108,6 +108,6 @@ module.exports = ({ repository }) => {
     createUser,
     updateUser,
     deleteUser,
-    updatePassword,
+    updatePassword
   };
 };

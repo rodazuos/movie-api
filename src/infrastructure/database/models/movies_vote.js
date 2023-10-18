@@ -1,42 +1,42 @@
 module.exports = (sequelize, DataTypes) => {
   const MoviesVote = sequelize.define(
-    "movies_vote",
+    'movies_vote',
     {
       idMovies: {
-        field: "id_movies",
+        field: 'id_movies',
         type: DataTypes.BIGINT,
-        allowNull: false,
+        allowNull: false
       },
       idUser: {
-        field: "id_user",
+        field: 'id_user',
         type: DataTypes.BIGINT,
-        allowNull: false,
+        allowNull: false
       },
       vote: {
-        field: "vote",
+        field: 'vote',
         type: DataTypes.INTEGER,
-        allowNull: false,
+        allowNull: false
       },
       createdAt: {
-        field: "created_at",
+        field: 'created_at',
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: sequelize.literal("timezone('utc', now())"),
+        defaultValue: sequelize.literal("timezone('utc', now())")
       },
       updatedAt: {
-        field: "updated_at",
+        field: 'updated_at',
         type: DataTypes.DATE,
-        allowNull: true,
+        allowNull: true
       },
       deletedAt: {
-        field: "deleted_at",
+        field: 'deleted_at',
         type: DataTypes.DATE,
-        allowNull: true,
-      },
+        allowNull: true
+      }
     },
     {
       freezeTableName: true,
-      timestamps: false,
+      timestamps: false
     }
   );
 

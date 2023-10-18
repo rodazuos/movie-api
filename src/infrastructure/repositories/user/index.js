@@ -1,7 +1,6 @@
-const { NotFoundException } = require("../../../infrastructure/errors");
-
 module.exports = (dbContext) => {
   const model = dbContext.models.users;
+  const { Op } = dbContext.sequelize;
   const notDeletedClause = { deletedAt: null };
 
   const create = async ({ typeAccount, cpf, name, password }) => {
@@ -9,14 +8,13 @@ module.exports = (dbContext) => {
       typeAccount,
       cpf,
       name,
-      password,
+      password
     });
 
     return dataValues;
   };
 
   const getByUser = async (cpf) => {
-    const { Op } = dbContext.sequelize;
     const whereConditions = { [Op.and]: [{ cpf }, notDeletedClause] };
     const queryResult = await model.findOne({ where: whereConditions });
 
@@ -29,10 +27,7 @@ module.exports = (dbContext) => {
   };
 
   const getById = async (id, { includeDeleted = false } = {}) => {
-    const { Op } = dbContext.sequelize;
-    const whereConditions = includeDeleted
-      ? { id }
-      : { [Op.and]: [{ id }, notDeletedClause] };
+    const whereConditions = includeDeleted ? { id } : { [Op.and]: [{ id }, notDeletedClause] };
     const queryResult = await model.findOne({ where: whereConditions });
 
     if (!queryResult) {
@@ -45,54 +40,46 @@ module.exports = (dbContext) => {
   };
 
   const update = async (userModel) => {
-    const { Op } = dbContext.sequelize;
     userModel.updatedAt = dbContext.sequelize.literal("timezone('utc', now())");
 
     const whereConditions = {
-      [Op.and]: [{ id: userModel.id }, notDeletedClause],
+      [Op.and]: [{ id: userModel.id }, notDeletedClause]
     };
-    const userToUpdated = await model.findOne({ where: whereConditions });
-    if (!userToUpdated) {
-      throw NotFoundException("Usuário não encontrado!");
+    const entityToUpdated = await model.findOne({ where: whereConditions });
+    if (!entityToUpdated) {
+      return null;
     }
 
-    const { dataValues } = await userToUpdated.update(userModel);
+    const { dataValues } = await entityToUpdated.update(userModel);
     return dataValues;
   };
 
   const updatePassword = async (userModel) => {
-    const { Op } = dbContext.sequelize;
     userModel.updatedAt = dbContext.sequelize.literal("timezone('utc', now())");
 
     const whereConditions = {
-      [Op.and]: [{ id: userModel.id }, notDeletedClause],
+      [Op.and]: [{ id: userModel.id }, notDeletedClause]
     };
-    const userToUpdated = await model.findOne({ where: whereConditions });
-    if (!userToUpdated) {
-      throw NotFoundException("Usuário não encontrado!");
+    const entityToUpdated = await model.findOne({ where: whereConditions });
+    if (!entityToUpdated) {
+      return null;
     }
 
-    const user = await getById(userModel.id, { includeDeleted: false });
-    if (!user) {
-      throw NotFoundException("Usuário não encontrado!");
-    }
-
-    const { dataValues } = await userToUpdated.update(userModel);
+    const { dataValues } = await entityToUpdated.update(userModel);
     return dataValues;
   };
 
   const logicDeleteById = async (id) => {
-    const { Op } = dbContext.sequelize;
     const entity = await model.findOne({
-      where: { [Op.and]: [{ id }, notDeletedClause] },
+      where: { [Op.and]: [{ id }, notDeletedClause] }
     });
 
     if (!entity) {
-      throw NotFoundException("Usuário não encontrado!");
+      return null;
     }
 
     const { dataValues } = await entity.update({
-      deletedAt: dbContext.sequelize.literal("timezone('utc', now())"),
+      deletedAt: dbContext.sequelize.literal("timezone('utc', now())")
     });
 
     return dataValues;
@@ -104,6 +91,6 @@ module.exports = (dbContext) => {
     getByUser,
     logicDeleteById,
     update,
-    updatePassword,
+    updatePassword
   };
 };
