@@ -1,0 +1,10 @@
+ create table users (
+    id bigserial primary key,
+    type_account integer not null,
+    cpf varchar(11) not null,
+    name varchar(300) not null,
+    password varchar(300) not null,
+    created_at timestamp default timezone('utc', now()),
+    updated_at timestamp,
+    deleted_at timestamp
+);

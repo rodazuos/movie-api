@@ -32,8 +32,11 @@
     "@koa/router": "^11.0.2",
     "awilix": "^9.0.0",
     "dotenv": "^16.3.1",
+    "jsonwebtoken": "^9.0.2",
     "koa": "^2.14.2",
-    "koa-bodyparser": "^4.4.1"
+    "koa-bodyparser": "^4.4.1",
+    "pg": "^8.11.3",
+    "sequelize": "^6.33.0"
   },
   "devDependencies": {
     "eslint": "^8.51.0",
