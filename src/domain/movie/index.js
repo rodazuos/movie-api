@@ -16,7 +16,13 @@ const returnMovieData = (movie) => {
 };
 
 const createMovie = async ({ movieRepository, movie }) => {
-  const movieExists = await movieRepository.getByFilters({ title: movie.title, originalTitle: movie.originalTitle });
+  
+  const objectFilters = { title: movie.title};
+  if (movie.originalTitle) {
+    objectFilters.originalTitle = movie.originalTitle;
+  }
+  
+  const movieExists = await movieRepository.getByFilters(objectFilters);
   if (movieExists) {
     throw ConflictException('Filme já cadastrado!');
   }

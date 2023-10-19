@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
       originalTitle: {
         field: 'original_title',
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
       },
       releaseYear: {
         field: 'release_year',

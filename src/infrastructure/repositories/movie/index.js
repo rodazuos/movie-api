@@ -19,7 +19,6 @@ module.exports = (dbContext) => {
 
   const getByFilters = async (filters) => {
     const whereConditions = { [Op.or]: [{ ...filters }] };
-
     const queryResult = await model.findOne({ where: whereConditions });
     if (!queryResult) {
       return null;

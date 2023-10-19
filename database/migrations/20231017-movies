@@ -1,7 +1,7 @@
  create table movies (
     id bigserial primary key,
     title varchar(300) not null,
-    original_title varchar(300) not null,
+    original_title varchar(300) null,
     release_year varchar(4) not null,
     age_group varchar(2) not null,
     duration varchar(10) not null,

@@ -1,5 +1,6 @@
 const { OK } = require('http-status');
 const MovieDomain = require('../../../../domain/movie');
+const { sanitizeMovie } = require('../../forms/movie');
 
 module.exports = ({ repository }) => {
   const { movieRepository } = repository;
@@ -17,16 +18,9 @@ module.exports = ({ repository }) => {
 
   const createMovie = async (ctx) => {
     try {
-      const { title, originalTitle, releaseYear, ageGroup, duration, description, poster } = ctx.request.body;
-
+      const dataValid = await sanitizeMovie(ctx.request.body);
       const movie = {
-        title,
-        originalTitle,
-        releaseYear,
-        ageGroup,
-        duration,
-        description,
-        poster
+        ...dataValid
       };
 
       const result = await MovieDomain.createMovie({
