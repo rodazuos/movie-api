@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
-  const CastProfiles = sequelize.define(
-    'cast_profiles',
+  const MoviesCast = sequelize.define(
+    'movies_cast',
     {
       id: {
         type: DataTypes.BIGINT,
@@ -16,10 +16,23 @@ module.exports = (sequelize, DataTypes) => {
       id_cast_profiles: {
         field: 'id_cast_profiles',
         type: DataTypes.INTEGER,
-        allowNull: false
+        references: {
+          model: 'CastProfiles',
+          key: 'id'
+      }
       },
       name: {
         field: 'name',
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      characterName: {
+        field: 'character_name',
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      photo: {
+        field: 'photo',
         type: DataTypes.STRING,
         allowNull: false
       },
@@ -46,5 +59,12 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  return CastProfiles;
+  MoviesCast.associate = models => {
+    MoviesCast.belongsTo(models.cast_profiles, {
+        foreignKey: 'id_cast_profiles',
+        as: 'castProfiles'
+    });
+};
+
+  return MoviesCast;
 };

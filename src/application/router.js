@@ -4,6 +4,8 @@ module.exports = ({
   authenticationController,
   userController,
   movieController,
+  castProfileController,
+  genresController,
   verifyAuthenticationMiddleware,
   adminAuthorizationMiddleare
 }) => {
@@ -70,6 +72,56 @@ module.exports = ({
 
   router.get('/v1/movies/list', verifyAuthenticationMiddleware.verifyAuthentication, movieController.listMovies);
   router.post('/v1/movie/:id/vote', verifyAuthenticationMiddleware.verifyAuthentication, movieController.voteMovie);
+
+  router.get(
+    '/v1/cast-profile/:id',
+    verifyAuthenticationMiddleware.verifyAuthentication,
+    adminAuthorizationMiddleare.adminAuthorization,
+    castProfileController.getCastProfile
+  );
+  router.post(
+    '/v1/cast-profile',
+    verifyAuthenticationMiddleware.verifyAuthentication,
+    adminAuthorizationMiddleare.adminAuthorization,
+    castProfileController.createCastProfile
+  );
+  router.put(
+    '/v1/cast-profile/:id',
+    verifyAuthenticationMiddleware.verifyAuthentication,
+    adminAuthorizationMiddleare.adminAuthorization,
+    castProfileController.updateCastProfile
+  );
+  router.delete(
+    '/v1/cast-profile/:id',
+    verifyAuthenticationMiddleware.verifyAuthentication,
+    adminAuthorizationMiddleare.adminAuthorization,
+    castProfileController.deleteCastProfile
+  );
+
+  router.get(
+    '/v1/genre/:id',
+    verifyAuthenticationMiddleware.verifyAuthentication,
+    adminAuthorizationMiddleare.adminAuthorization,
+    genresController.getGenre
+  );
+  router.post(
+    '/v1/genre',
+    verifyAuthenticationMiddleware.verifyAuthentication,
+    adminAuthorizationMiddleare.adminAuthorization,
+    genresController.createGenre
+  );
+  router.put(
+    '/v1/genre/:id',
+    verifyAuthenticationMiddleware.verifyAuthentication,
+    adminAuthorizationMiddleare.adminAuthorization,
+    genresController.updateGenre
+  );
+  router.delete(
+    '/v1/genre/:id',
+    verifyAuthenticationMiddleware.verifyAuthentication,
+    adminAuthorizationMiddleare.adminAuthorization,
+    genresController.deleteGenre
+  );
 
   return router;
 };

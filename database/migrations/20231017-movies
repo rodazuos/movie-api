@@ -13,43 +13,28 @@
 );
 
 create table cast_profiles (
-	id integer primary key,
+	id INT GENERATED ALWAYS AS IDENTITY UNIQUE,
 	description varchar(300) not null,
 	created_at timestamp default timezone('utc', now()),
     updated_at timestamp,
     deleted_at timestamp
 );
-
-insert into cast_profiles (id, description) values (1, 'Direção');
-insert into cast_profiles (id, description) values (2, 'Roteirista');
-insert into cast_profiles (id, description) values (3, 'Artista');
 
 create table genres (
-	id integer primary key,
+	id INT GENERATED ALWAYS AS identity UNIQUE,
 	description varchar(300) not null,
 	created_at timestamp default timezone('utc', now()),
     updated_at timestamp,
     deleted_at timestamp
 );
-
-insert into genres (id, description) values (1, 'Biografia');
-insert into genres (id, description) values (2, 'Drama');
-insert into genres (id, description) values (3, 'História');
-insert into genres (id, description) values (4, 'Guerra');
-insert into genres (id, description) values (5, 'Romance');
-insert into genres (id, description) values (6, 'Ficção');
-insert into genres (id, description) values (7, 'Aventura');
-insert into genres (id, description) values (8, 'Terror');
-insert into genres (id, description) values (9, 'Ação');
-insert into genres (id, description) values (10, 'Comedia');
 
 create table movies_genres(
 	id bigserial primary key,
 	id_movies bigserial references movies(id),
-	id_genres integer references genres(id),
+	id_genres INT references genres(id),
 	created_at timestamp default timezone('utc', now()),
 	updated_at timestamp,
-    deleted_at timestamp	
+    deleted_at timestamp
 );
 
 create table movies_cast (

@@ -11,7 +11,8 @@ module.exports = (sequelize, DataTypes) => {
       description: {
         field: 'description',
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true,
+        defaultValue: "AUDIO"
       },
       createdAt: {
         field: 'created_at',
