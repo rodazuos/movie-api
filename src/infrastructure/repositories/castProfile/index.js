@@ -4,7 +4,7 @@ module.exports = (dbContext) => {
   const notDeletedClause = { deletedAt: null };
 
   const create = async (description) => {
-    const { dataValues } = await model.create({...description});
+    const { dataValues } = await model.create({ ...description });
     return dataValues;
   };
 

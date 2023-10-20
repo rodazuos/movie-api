@@ -2,15 +2,21 @@ module.exports = (sequelize, DataTypes) => {
   const MoviesVote = sequelize.define(
     'movies_vote',
     {
-      idMovies: {
-        field: 'id_movies',
+      idMovie: {
+        field: 'id_movie',
         type: DataTypes.BIGINT,
-        allowNull: false
+        references: {
+          model: 'Movies',
+          key: 'id'
+        }
       },
       idUser: {
         field: 'id_user',
         type: DataTypes.BIGINT,
-        allowNull: false
+        references: {
+          model: 'Users',
+          key: 'id'
+        }
       },
       vote: {
         field: 'vote',

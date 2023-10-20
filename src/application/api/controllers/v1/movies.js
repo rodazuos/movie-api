@@ -3,12 +3,12 @@ const MovieDomain = require('../../../../domain/movie');
 const { sanitizeMovie } = require('../../forms/movie');
 
 module.exports = ({ repository }) => {
-  const { movieRepository } = repository;
+  const { movieRepository, movieCastRepository, movieGenreRepository } = repository;
 
   const getMovie = async (ctx) => {
     try {
       const { id } = ctx.request.params;
-      const result = await MovieDomain.getMovie({ movieRepository, id });
+      const result = await MovieDomain.getMovie({ movieRepository, id, movieCastRepository, movieGenreRepository });
       ctx.status = OK;
       ctx.body = result;
     } catch (error) {
@@ -25,7 +25,9 @@ module.exports = ({ repository }) => {
 
       const result = await MovieDomain.createMovie({
         movieRepository,
-        movie
+        movie,
+        movieCastRepository,
+        movieGenreRepository
       });
 
       ctx.status = OK;
@@ -38,22 +40,17 @@ module.exports = ({ repository }) => {
   const updateMovie = async (ctx) => {
     try {
       const { id } = ctx.request.params;
-      const { title, originalTitle, releaseYear, ageGroup, duration, description, poster } = ctx.request.body;
-
+      const dataValid = await sanitizeMovie(ctx.request.body);
       const movie = {
         id,
-        title,
-        originalTitle,
-        releaseYear,
-        ageGroup,
-        duration,
-        description,
-        poster
+        ...dataValid
       };
 
       const result = await MovieDomain.updateMovie({
         movieRepository,
-        movie
+        movie,
+        movieCastRepository,
+        movieGenreRepository
       });
 
       ctx.status = OK;

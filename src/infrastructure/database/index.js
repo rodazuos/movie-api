@@ -2,8 +2,18 @@ const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
 
-const { DB_HOST, DB_PORT, DB_USER, DB_PASS, DB_DATABASE, DB_POOL_MAX, DB_POOL_MIN, DB_POOL_ACQUIRE, DB_POOL_IDLE, ENABLE_LOG } =
-  process.env;
+const {
+  DB_HOST,
+  DB_PORT,
+  DB_USER,
+  DB_PASS,
+  DB_DATABASE,
+  DB_POOL_MAX,
+  DB_POOL_MIN,
+  DB_POOL_ACQUIRE,
+  DB_POOL_IDLE,
+  ENABLE_LOG
+} = process.env;
 
 module.exports = () => {
   const connString = `postgres://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_DATABASE}`;
@@ -16,7 +26,7 @@ module.exports = () => {
       acquire: Number(DB_POOL_ACQUIRE),
       idle: Number(DB_POOL_IDLE)
     },
-    logging: ENABLE_LOG === "dev"
+    logging: ENABLE_LOG === 'dev'
   });
 
   const models = {};

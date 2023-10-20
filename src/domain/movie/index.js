@@ -1,6 +1,6 @@
 const { NotFoundException, ConflictException } = require('../../infrastructure/errors');
 
-const returnMovieData = (movie) => {
+const returnMovieData = (movie, castList, genreList) => {
   return {
     id: movie.id,
     title: movie.title,
@@ -11,24 +11,35 @@ const returnMovieData = (movie) => {
     description: movie.description,
     poster: movie.poster,
     lastUpdated: movie.updateAt || movie.createdAt,
-    isActive: movie.deletedAt === null
+    isActive: movie.deletedAt === null,
+    cast: castList.map(
+      (castProfile) =>
+        new Object({ name: castProfile.name, characterName: castProfile.character_name, photo: castProfile.photo })
+    ),
+    genre: genreList.map((genre) => genre.description)
   };
 };
 
-const createMovie = async ({ movieRepository, movie }) => {
-  
-  const objectFilters = { title: movie.title};
+const createMovie = async ({ movieRepository, movie, movieCastRepository, movieGenreRepository }) => {
+  const objectFilters = { title: movie.title };
   if (movie.originalTitle) {
     objectFilters.originalTitle = movie.originalTitle;
   }
-  
+
   const movieExists = await movieRepository.getByFilters(objectFilters);
   if (movieExists) {
     throw ConflictException('Filme já cadastrado!');
   }
 
   const result = await movieRepository.create({ ...movie });
-  return returnMovieData(result);
+
+  await movieCastRepository.createMultipleEntries(result.id, movie.cast);
+  await movieGenreRepository.createMultipleEntries(result.id, movie.genres);
+
+  const castList = await movieCastRepository.getAllByMovieId(result.id);
+  const genreList = await movieGenreRepository.getAllByMovieId(result.id);
+
+  return returnMovieData(result, castList, genreList);
 };
 
 const getMovie = async ({ movieRepository, id }) => {
@@ -43,14 +54,20 @@ const getMovie = async ({ movieRepository, id }) => {
   return returnMovieData(movie);
 };
 
-const updateMovie = async ({ movieRepository, movie }) => {
+const updateMovie = async ({ movieRepository, movie, movieCastRepository, movieGenreRepository }) => {
   const result = await movieRepository.update(movie);
 
   if (!result) {
     throw NotFoundException('Filme não encontrado!');
   }
 
-  return returnMovieData(result);
+  await movieCastRepository.createMultipleEntries(result.id, movie.cast);
+  await movieGenreRepository.createMultipleEntries(result.id, movie.genres);
+
+  const castList = await movieCastRepository.getAllByMovieId(result.id);
+  const genreList = await movieGenreRepository.getAllByMovieId(result.id);
+
+  return returnMovieData(result, castList, genreList);
 };
 
 const deleteMovie = async ({ movieRepository, id }) => {

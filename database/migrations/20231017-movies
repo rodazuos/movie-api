@@ -30,8 +30,8 @@ create table genres (
 
 create table movies_genres(
 	id bigserial primary key,
-	id_movies bigserial references movies(id),
-	id_genres INT references genres(id),
+	id_movie bigserial references movies(id),
+	id_genre INT references genres(id),
 	created_at timestamp default timezone('utc', now()),
 	updated_at timestamp,
     deleted_at timestamp
@@ -39,10 +39,10 @@ create table movies_genres(
 
 create table movies_cast (
 	id bigserial primary key,
-	id_movies bigserial references movies(id),
-	id_cast_profiles integer references cast_profiles(id),
+	id_movie bigserial references movies(id),
+	id_cast_profile integer references cast_profiles(id),
 	name varchar(300) not null,
-	character_name varchar(300) not null,
+	character_name varchar(300) null,
 	photo varchar(1000) null,
 	created_at timestamp default timezone('utc', now()),
 	updated_at timestamp,
@@ -50,7 +50,7 @@ create table movies_cast (
 );
 
 create table movies_vote (
-	id_movies bigserial references movies(id),
+	id_movie bigserial references movies(id),
 	id_user bigserial references users(id),
 	vote integer not null,
 	created_at timestamp default timezone('utc', now()),

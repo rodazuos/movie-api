@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
-  const MoviesCast = sequelize.define(
-    'movies_cast',
+  const MoviesGenre = sequelize.define(
+    'movies_genres',
     {
       id: {
         type: DataTypes.BIGINT,
@@ -16,28 +16,13 @@ module.exports = (sequelize, DataTypes) => {
           key: 'id'
         }
       },
-      idCastProfile: {
-        field: 'id_cast_profile',
+      idGenre: {
+        field: 'id_genre',
         type: DataTypes.INTEGER,
         references: {
-          model: 'CastProfiles',
+          model: 'Genres',
           key: 'id'
         }
-      },
-      name: {
-        field: 'name',
-        type: DataTypes.STRING,
-        allowNull: false
-      },
-      characterName: {
-        field: 'character_name',
-        type: DataTypes.STRING,
-        allowNull: true
-      },
-      photo: {
-        field: 'photo',
-        type: DataTypes.STRING,
-        allowNull: true
       },
       createdAt: {
         field: 'created_at',
@@ -62,5 +47,5 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  return MoviesCast;
+  return MoviesGenre;
 };

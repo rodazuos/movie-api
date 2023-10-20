@@ -20,8 +20,6 @@ const createCastProfile = async ({ castProfileRepository, castProfile }) => {
 };
 
 const getCastProfile = async ({ castProfileRepository, id }) => {
-    console.log(castProfileRepository);
-    console.log(id);
   const castProfile = await castProfileRepository.getById(id, {
     includeDeleted: true
   });
