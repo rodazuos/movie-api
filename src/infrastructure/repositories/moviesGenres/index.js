@@ -1,8 +1,6 @@
 module.exports = (dbContext) => {
   const model = dbContext.models.movies_genres;
-  const { Op } = dbContext.sequelize;
   const rawSelectQuery = dbContext.rawSelectQuery;
-  const notDeletedClause = { deletedAt: null };
 
   const createMultipleEntries = async (movieId, listGenres) => {
     listGenres.forEach((genre) => {
@@ -40,9 +38,26 @@ module.exports = (dbContext) => {
     return queryResult;
   };
 
+  const getGenreInListMovieId = async (listMoviesId) => {
+    const queryResult = await rawSelectQuery(
+      ` select mg.id_movie, g.description
+      from movies_genres mg inner join genres g on mg.id_genre = g.id 
+      where mg.id_movie in (:idMovies) and mg.deleted_at is null order by description ASC;
+          `,
+      { idMovies: listMoviesId }
+    );
+
+    if (!queryResult) {
+      return null;
+    }
+
+    return queryResult;
+  };
+
   return {
     createMultipleEntries,
     updateMultipleEntries,
-    getAllByMovieId
+    getAllByMovieId,
+    getGenreInListMovieId
   };
 };

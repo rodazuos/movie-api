@@ -7,7 +7,8 @@ module.exports = ({
   castProfileController,
   genresController,
   verifyAuthenticationMiddleware,
-  adminAuthorizationMiddleare
+  adminAuthorizationMiddleare,
+  userAuthorizationMiddleare
 }) => {
   const router = new Router();
 
@@ -71,7 +72,12 @@ module.exports = ({
   );
 
   router.get('/v1/movies/list', verifyAuthenticationMiddleware.verifyAuthentication, movieController.listMovies);
-  router.post('/v1/movie/:id/vote', verifyAuthenticationMiddleware.verifyAuthentication, movieController.voteMovie);
+  router.post(
+    '/v1/movie/:id/vote',
+    verifyAuthenticationMiddleware.verifyAuthentication,
+    userAuthorizationMiddleare.userAuthorization,
+    movieController.voteMovie
+  );
 
   router.get(
     '/v1/cast-profile/list',

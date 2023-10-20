@@ -1,5 +1,6 @@
 const { OK } = require('http-status');
 const UserDomain = require('../../../../domain/user');
+const Logger = require('../../../../utils/logger');
 
 module.exports = ({ repository }) => {
   const { userRepository } = repository;
@@ -13,6 +14,7 @@ module.exports = ({ repository }) => {
       ctx.status = OK;
       ctx.body = result;
     } catch (error) {
+      Logger.error(error);
       throw error;
     }
   };
@@ -26,6 +28,7 @@ module.exports = ({ repository }) => {
       ctx.status = OK;
       ctx.body = result;
     } catch (error) {
+      Logger.error(error);
       throw error;
     }
   };
@@ -47,6 +50,7 @@ module.exports = ({ repository }) => {
       ctx.status = OK;
       ctx.body = result;
     } catch (error) {
+      Logger.error(error);
       throw error;
     }
   };
@@ -71,6 +75,7 @@ module.exports = ({ repository }) => {
       ctx.status = OK;
       ctx.body = result;
     } catch (error) {
+      Logger.error(error);
       throw error;
     }
   };
@@ -81,6 +86,7 @@ module.exports = ({ repository }) => {
       await UserDomain.deleteUser({ userRepository, id });
       ctx.status = OK;
     } catch (error) {
+      Logger.error(error);
       throw error;
     }
   };
@@ -98,6 +104,7 @@ module.exports = ({ repository }) => {
 
       ctx.status = OK;
     } catch (error) {
+      Logger.error(error);
       throw error;
     }
   };

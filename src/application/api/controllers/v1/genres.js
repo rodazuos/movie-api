@@ -1,5 +1,6 @@
 const { OK } = require('http-status');
 const GenreDomain = require('../../../../domain/genre');
+const Logger = require('../../../../utils/logger');
 
 module.exports = ({ repository }) => {
   const { genreRepository } = repository;
@@ -10,6 +11,7 @@ module.exports = ({ repository }) => {
       ctx.status = OK;
       ctx.body = result;
     } catch (error) {
+      Logger.error(error);
       throw error;
     }
   };
@@ -30,6 +32,7 @@ module.exports = ({ repository }) => {
       ctx.status = OK;
       ctx.body = result;
     } catch (error) {
+      Logger.error(error);
       throw error;
     }
   };
@@ -52,6 +55,7 @@ module.exports = ({ repository }) => {
       ctx.status = OK;
       ctx.body = result;
     } catch (error) {
+      Logger.error(error);
       throw error;
     }
   };
@@ -62,6 +66,7 @@ module.exports = ({ repository }) => {
       await GenreDomain.deleteGenre({ genreRepository, id });
       ctx.status = OK;
     } catch (error) {
+      Logger.error(error);
       throw error;
     }
   };

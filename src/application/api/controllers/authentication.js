@@ -1,5 +1,6 @@
 const { OK } = require('http-status');
 const AuthorizationDomain = require('../../../domain/authorization');
+const Logger = require('../../../utils/logger');
 
 module.exports = ({ repository }) => {
   const { userRepository } = repository;
@@ -17,6 +18,7 @@ module.exports = ({ repository }) => {
       ctx.status = OK;
       ctx.body = result;
     } catch (error) {
+      Logger.error(error);
       throw error;
     }
   };
@@ -32,6 +34,7 @@ module.exports = ({ repository }) => {
 
       ctx.status = OK;
     } catch (error) {
+      Logger.error(error);
       throw error;
     }
   };

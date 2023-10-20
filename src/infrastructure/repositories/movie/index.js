@@ -2,6 +2,7 @@ module.exports = (dbContext) => {
   const model = dbContext.models.movies;
   const { Op } = dbContext.sequelize;
   const notDeletedClause = { deletedAt: null };
+  const rawSelectQuery = dbContext.rawSelectQuery;
 
   const create = async ({ title, originalTitle, releaseYear, ageGroup, duration, description, poster }) => {
     const { dataValues } = await model.create({
@@ -80,11 +81,73 @@ module.exports = (dbContext) => {
     return dataValues;
   };
 
+  const prepareQuerySearch = (filters, hasTotal) => {
+    let query = ` select distinct 
+    m.id, m.title, m.original_title, m.release_year, m.age_group, m.duration, m.description, m.poster `;
+    if (hasTotal) {
+      query = `select count(distinct m.id) as total`;
+    }
+
+    query =
+      query +
+      ` from movies m
+    inner join movies_cast mc on m.id = mc.id_movie
+    inner join movies_genres mg on m.id = mg.id_movie
+    inner join cast_profiles cp on mc.id_cast_profile = cp.id
+    inner join genres g on mg.id_genre = g.id `;
+
+    if (filters) {
+      query = query + ' where';
+      if (filters.title) {
+        query = query + ` lower(title) like '%${filters.title.toLowerCase()}%'`;
+      }
+
+      if (filters.genre) {
+        query = query + ` and lower(g.description) like '%${filters.genre.toLowerCase()}%'`;
+      }
+
+      if (filters.director && filters.actor) {
+        query =
+          query + ` and  (lower(mc."name") like '%${filters.director}%' or lower(mc."name") like '%${filters.actor}%')`;
+      } else if (filters.director) {
+        query = query + ` and  lower(mc."name") like '%${filters.director}%'`;
+      } else if (filters.actor) {
+        query = query + ` and  lower(mc."name") like '%${filters.actor}%'`;
+      }
+    }
+
+    const limit = filters.limit ? filters.limit : 10;
+    const offset = filters.page ? filters.page * limit : 0;
+
+    if (!hasTotal) {
+      query = query + ` order by title ASC limit ${limit} offset ${offset};`;
+    }
+
+    return query;
+  };
+
+  const getListMovies = async (filters) => {
+    const queryResult = await rawSelectQuery(prepareQuerySearch(filters));
+
+    if (!queryResult) {
+      return null;
+    }
+
+    const queryTotalResult = await rawSelectQuery(prepareQuerySearch(filters, true));
+
+    return {
+      total: parseInt(queryTotalResult[0].total),
+      page: filters.page,
+      queryResult
+    };
+  };
+
   return {
     create,
     getById,
     logicDeleteById,
     update,
-    getByFilters
+    getByFilters,
+    getListMovies
   };
 };

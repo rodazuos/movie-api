@@ -50,6 +50,7 @@ create table movies_cast (
 );
 
 create table movies_vote (
+	id bigserial primary key,
 	id_movie bigserial references movies(id),
 	id_user bigserial references users(id),
 	vote integer not null,

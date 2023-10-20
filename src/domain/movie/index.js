@@ -1,6 +1,6 @@
-const { NotFoundException, ConflictException } = require('../../infrastructure/errors');
+const { NotFoundException, ConflictException, InternalServerException } = require('../../infrastructure/errors');
 
-const returnMovieData = (movie, castList, genreList, includeIdentification = false) => {
+const returnMovieData = (movie, castList, genreList, averageVote, includeIdentification = false) => {
   const normalizedata = {
     id: movie.id,
     title: movie.title,
@@ -11,9 +11,11 @@ const returnMovieData = (movie, castList, genreList, includeIdentification = fal
     description: movie.description,
     poster: movie.poster,
     lastUpdated: movie.updateAt || movie.createdAt,
+    averageVote: averageVote ? parseFloat(averageVote) : 0,
     isActive: movie.deletedAt === null,
     cast: castList.map((castProfile) => {
       const dataObject = new Object({
+        description: castProfile.description,
         name: castProfile.name,
         characterName: castProfile.character_name,
         photo: castProfile.photo
@@ -35,7 +37,7 @@ const returnMovieData = (movie, castList, genreList, includeIdentification = fal
   return normalizedata;
 };
 
-const getMovie = async ({ movieRepository, id, movieCastRepository, movieGenreRepository }) => {
+const getMovie = async ({ movieRepository, id, movieCastRepository, movieGenreRepository, movieVoteRepository }) => {
   const movie = await movieRepository.getById(id, {
     includeDeleted: true
   });
@@ -46,9 +48,10 @@ const getMovie = async ({ movieRepository, id, movieCastRepository, movieGenreRe
 
   const castList = await movieCastRepository.getAllByMovieId(movie.id);
   const genreList = await movieGenreRepository.getAllByMovieId(movie.id);
+  const averageVote = await movieVoteRepository.getAverageVotes(movie.id);
 
   const includeIdentification = true;
-  return returnMovieData(movie, castList, genreList, includeIdentification);
+  return returnMovieData(movie, castList, genreList, averageVote, includeIdentification);
 };
 
 const createMovie = async ({ movieRepository, movie, movieCastRepository, movieGenreRepository }) => {
@@ -116,9 +119,53 @@ const deleteMovie = async ({ movieRepository, id }) => {
   return returnMovieData(result);
 };
 
+const voteMovie = async ({ movieVoteRepository, voteData }) => {
+  const result = await movieVoteRepository.createUpdate({ ...voteData });
+
+  if (!result) {
+    throw InternalServerException('Erro ao adicionar voto!');
+  }
+
+  return { vote: true };
+};
+
+const listMovies = async ({
+  movieRepository,
+  movieCastRepository,
+  movieGenreRepository,
+  movieVoteRepository,
+  filters
+}) => {
+  const resultMovies = await movieRepository.getListMovies(filters);
+
+  if (resultMovies.queryResult.length > 0) {
+    const listMoviesId = resultMovies.queryResult.map((movie) => movie.id);
+    const castMovies = await movieCastRepository.getCastInListMovieId(listMoviesId);
+    const genresMovies = await movieGenreRepository.getGenreInListMovieId(listMoviesId);
+    const averageMovies = await movieVoteRepository.getAverageListMovies(listMoviesId);
+
+    const normalizedResult = resultMovies.queryResult.map((movie) => {
+      const castMovie = castMovies.filter((cast) => cast.id_movie == movie.id);
+      const genreMovie = genresMovies.filter((genre) => genre.id_movie == movie.id);
+      const averageMovie = averageMovies.filter((averageMovie) => averageMovie.id_movie == movie.id);
+      return returnMovieData(movie, castMovie, genreMovie, averageMovie[0]?.average_vote);
+    });
+
+    return {
+      total: resultMovies.total,
+      page: resultMovies.page,
+      data: normalizedResult
+    };
+  }
+
+  return [];
+};
+
 module.exports = {
   createMovie,
   getMovie,
   updateMovie,
-  deleteMovie
+  deleteMovie,
+  voteMovie,
+  listMovies
 };

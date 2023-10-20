@@ -1,6 +1,16 @@
 const Joi = require('joi');
 const { BadRequestException } = require('../../../infrastructure/errors');
 
+const validateSchema = async (schema, data) => {
+  try {
+    const validFields = await schema.validateAsync(data);
+    return validFields;
+  } catch (error) {
+    const errors = error.details.map((error) => error.message);
+    throw BadRequestException(errors.join());
+  }
+};
+
 const sanitizeCreateMovie = async (data) => {
   const schema = Joi.object({
     title: Joi.string().required(),
@@ -25,13 +35,7 @@ const sanitizeCreateMovie = async (data) => {
       .required()
   });
 
-  try {
-    const validFields = await schema.validateAsync(data);
-    return validFields;
-  } catch (error) {
-    const errors = error.details.map((error) => error.message);
-    throw BadRequestException(errors.join());
-  }
+  return validateSchema(schema, data);
 };
 
 const sanitizeUpdateMovie = async (data) => {
@@ -71,13 +75,32 @@ const sanitizeUpdateMovie = async (data) => {
     })
   });
 
-  try {
-    const validFields = await schema.validateAsync(data);
-    return validFields;
-  } catch (error) {
-    const errors = error.details.map((error) => error.message);
-    throw BadRequestException(errors.join());
-  }
+  return validateSchema(schema, data);
 };
 
-module.exports = { sanitizeCreateMovie, sanitizeUpdateMovie };
+const sanitizeMovieVote = async (data) => {
+  const schema = Joi.object({
+    id: Joi.number(),
+    idUser: Joi.number().required(),
+    idMovie: Joi.number().required(),
+    vote: Joi.number().min(0).max(4).required(),
+    delete: Joi.boolean()
+  });
+
+  return validateSchema(schema, data);
+};
+
+const sanitizeFiltersListMovie = async (data) => {
+  const schema = Joi.object({
+    title: Joi.string(),
+    director: Joi.string(),
+    genre: Joi.string(),
+    actor: Joi.string(),
+    limit: Joi.number().min(1).max(10),
+    page: Joi.number()
+  });
+
+  return validateSchema(schema, data);
+};
+
+module.exports = { sanitizeCreateMovie, sanitizeUpdateMovie, sanitizeMovieVote, sanitizeFiltersListMovie };

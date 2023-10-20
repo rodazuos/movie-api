@@ -12,6 +12,7 @@ const genresController = require('./application/api/controllers/v1/genres');
 
 const verifyAuthenticationMiddleware = require('./application/api/middlewares/verifyAuthentication');
 const adminAuthorizationMiddleare = require('./application/api/middlewares/adminAutorization');
+const userAuthorizationMiddleare = require('./application/api/middlewares/userAutorization');
 
 const dbContextFactory = require('./infrastructure/database');
 const repositories = require('./infrastructure/repositories');
@@ -33,7 +34,8 @@ container.register({
   genresController: asFunction(genresController).singleton(),
 
   verifyAuthenticationMiddleware: asFunction(verifyAuthenticationMiddleware).singleton(),
-  adminAuthorizationMiddleare: asFunction(adminAuthorizationMiddleare).singleton()
+  adminAuthorizationMiddleare: asFunction(adminAuthorizationMiddleare).singleton(),
+  userAuthorizationMiddleare: asFunction(userAuthorizationMiddleare).singleton()
 });
 
 module.exports = container;

@@ -1,5 +1,5 @@
 const jwt = require('../../utils/jwt');
-const { NotFoundException, UnauthorizedExcepation, InternalServerException } = require('../../infrastructure/errors');
+const { UnauthorizedExcepation, InternalServerException } = require('../../infrastructure/errors');
 const { createHash } = require('crypto');
 
 const getAuthorization = async ({ userRepository, cpf, password }) => {

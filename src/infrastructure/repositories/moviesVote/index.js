@@ -1,70 +1,68 @@
 module.exports = (dbContext) => {
   const model = dbContext.models.movies_vote;
   const { Op } = dbContext.sequelize;
-  const notDeletedClause = { deletedAt: null };
+  const rawSelectQuery = dbContext.rawSelectQuery;
 
-  const create = async ({ idMovie, idUser, vote }) => {
-    const { dataValues } = await model.create({
-      idMovie,
-      idUser,
-      vote
-    });
-
-    return dataValues;
+  const createUpdate = async (movieVoteModel) => {
+    if (movieVoteModel.id) {
+      const entityToUpdate = await model.findOne({ where: { id: { [Op.eq]: parseInt(movieVoteModel.id) } } });
+      entityToUpdate.update({
+        ...movieVoteModel,
+        updatedAt: dbContext.sequelize.literal("timezone('utc', now())"),
+        deletedAt: movieVoteModel.delete ? dbContext.sequelize.literal("timezone('utc', now())") : null
+      });
+    } else {
+      const whereConditions = {
+        idMovie: { [Op.eq]: parseInt(movieVoteModel.idMovie) },
+        idUser: { [Op.eq]: parseInt(movieVoteModel.idUser) }
+      };
+      const entityMovieVote = await model.findOne({ where: whereConditions });
+      if (!entityMovieVote) {
+        await model.create({
+          idMovie: movieVoteModel.idMovie,
+          idUser: movieVoteModel.idUser,
+          vote: movieVoteModel.vote
+        });
+      } else {
+        entityMovieVote.update({
+          ...movieVoteModel,
+          updatedAt: dbContext.sequelize.literal("timezone('utc', now())"),
+          deletedAt: movieVoteModel.delete ? dbContext.sequelize.literal("timezone('utc', now())") : null
+        });
+      }
+    }
+    return true;
   };
 
-  const getAllByMovieId = async (idMovie, { includeDeleted = false } = {}) => {
-    const whereConditions = includeDeleted ? { idMovie } : { [Op.and]: [{ idMovie }, notDeletedClause] };
-
-    const queryResult = await model.findAll({ where: whereConditions, order: [['id', 'ASC']] });
+  const getAverageVotes = async (idMovie) => {
+    const queryResult = await rawSelectQuery(
+      ` select avg(vote) as averageVote from movies_vote where id_movie = :idMovie;`,
+      { idMovie: idMovie }
+    );
 
     if (!queryResult) {
       return null;
     }
 
-    const entities = queryResult.map((data) => {
-      const { dataValues } = data;
-      return dataValues;
-    });
-
-    return entities;
+    return parseFloat(queryResult[0].averagevote);
   };
 
-  const update = async (movieVoteModel) => {
-    movieVoteModel.updatedAt = dbContext.sequelize.literal("timezone('utc', now())");
+  const getAverageListMovies = async (listMoviesId) => {
+    const queryResult = await rawSelectQuery(
+      `select id_movie, avg(vote) as average_vote  from movies_vote where id_movie in (:listMoviesId) group by id_movie order by id_movie asc;`,
+      { listMoviesId: listMoviesId }
+    );
 
-    const whereConditions = {
-      [Op.and]: [{ id: movieVoteModel.id }, notDeletedClause]
-    };
-    const entityToUpdated = await model.findOne({ where: whereConditions });
-    if (!entityToUpdated) {
+    if (!queryResult) {
       return null;
     }
 
-    const { dataValues } = await entityToUpdated.update(movieVoteModel);
-    return dataValues;
-  };
-
-  const logicDeleteById = async (id) => {
-    const entity = await model.findOne({
-      where: { [Op.and]: [{ id }, notDeletedClause] }
-    });
-
-    if (!entity) {
-      return null;
-    }
-
-    const { dataValues } = await entity.update({
-      deletedAt: dbContext.sequelize.literal("timezone('utc', now())")
-    });
-
-    return dataValues;
+    return queryResult;
   };
 
   return {
-    create,
-    getAllByMovieId,
-    logicDeleteById,
-    update
+    createUpdate,
+    getAverageVotes,
+    getAverageListMovies
   };
 };
