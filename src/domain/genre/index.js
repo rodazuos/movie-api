@@ -19,16 +19,16 @@ const createGenre = async ({ genreRepository, genre }) => {
   return returnData(result);
 };
 
-const getGenre = async ({ genreRepository, id }) => {
-  const genre = await genreRepository.getById(id, {
-    includeDeleted: true
-  });
+const getAllGenre = async ({ genreRepository }) => {
+  const listGenre = await genreRepository.getAll();
 
-  if (!genre) {
-    throw NotFoundException('Gênero não encontrado!');
+  if (!listGenre) {
+    throw NotFoundException('Nenhum gênero encontrado!');
   }
 
-  return returnData(genre);
+  const listNormalized = listGenre.map((genre) => returnData(genre));
+
+  return listNormalized;
 };
 
 const updateGenre = async ({ genreRepository, genre }) => {
@@ -53,7 +53,7 @@ const deleteGenre = async ({ genreRepository, id }) => {
 
 module.exports = {
   createGenre,
-  getGenre,
+  getAllGenre,
   updateGenre,
   deleteGenre
 };

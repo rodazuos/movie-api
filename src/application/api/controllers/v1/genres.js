@@ -4,10 +4,9 @@ const GenreDomain = require('../../../../domain/genre');
 module.exports = ({ repository }) => {
   const { genreRepository } = repository;
 
-  const getGenre = async (ctx) => {
+  const getAllGenre = async (ctx) => {
     try {
-      const { id } = ctx.request.params;
-      const result = await GenreDomain.getGenre({ genreRepository, id });
+      const result = await GenreDomain.getAllGenre({ genreRepository });
       ctx.status = OK;
       ctx.body = result;
     } catch (error) {
@@ -68,7 +67,7 @@ module.exports = ({ repository }) => {
   };
 
   return {
-    getGenre,
+    getAllGenre,
     createGenre,
     updateGenre,
     deleteGenre

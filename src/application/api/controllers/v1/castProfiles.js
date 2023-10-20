@@ -4,10 +4,9 @@ const CastProfileDomain = require('../../../../domain/castProfile');
 module.exports = ({ repository }) => {
   const { castProfileRepository } = repository;
 
-  const getCastProfile = async (ctx) => {
+  const getAllCastProfile = async (ctx) => {
     try {
-      const { id } = ctx.request.params;
-      const result = await CastProfileDomain.getCastProfile({ castProfileRepository, id });
+      const result = await CastProfileDomain.getAllCastProfile({ castProfileRepository });
       ctx.status = OK;
       ctx.body = result;
     } catch (error) {
@@ -68,7 +67,7 @@ module.exports = ({ repository }) => {
   };
 
   return {
-    getCastProfile,
+    getAllCastProfile,
     createCastProfile,
     updateCastProfile,
     deleteCastProfile

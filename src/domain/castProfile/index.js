@@ -19,16 +19,16 @@ const createCastProfile = async ({ castProfileRepository, castProfile }) => {
   return returnData(result);
 };
 
-const getCastProfile = async ({ castProfileRepository, id }) => {
-  const castProfile = await castProfileRepository.getById(id, {
-    includeDeleted: true
-  });
+const getAllCastProfile = async ({ castProfileRepository }) => {
+  const listCastProfile = await castProfileRepository.getAll();
 
-  if (!castProfile) {
-    throw NotFoundException('Perfil de elenco não encontrado!');
+  if (!listCastProfile) {
+    throw NotFoundException('Nenhum perfil encontrado!');
   }
 
-  return returnData(castProfile);
+  const listNormalized = listCastProfile.map((castProfile) => returnData(castProfile));
+
+  return listNormalized;
 };
 
 const updateCastProfile = async ({ castProfileRepository, castProfile }) => {
@@ -53,7 +53,7 @@ const deleteCastProfile = async ({ castProfileRepository, id }) => {
 
 module.exports = {
   createCastProfile,
-  getCastProfile,
+  getAllCastProfile,
   updateCastProfile,
   deleteCastProfile
 };

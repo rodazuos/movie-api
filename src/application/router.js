@@ -74,10 +74,10 @@ module.exports = ({
   router.post('/v1/movie/:id/vote', verifyAuthenticationMiddleware.verifyAuthentication, movieController.voteMovie);
 
   router.get(
-    '/v1/cast-profile/:id',
+    '/v1/cast-profile/list',
     verifyAuthenticationMiddleware.verifyAuthentication,
     adminAuthorizationMiddleare.adminAuthorization,
-    castProfileController.getCastProfile
+    castProfileController.getAllCastProfile
   );
   router.post(
     '/v1/cast-profile',
@@ -99,10 +99,10 @@ module.exports = ({
   );
 
   router.get(
-    '/v1/genre/:id',
+    '/v1/genre/list',
     verifyAuthenticationMiddleware.verifyAuthentication,
     adminAuthorizationMiddleare.adminAuthorization,
-    genresController.getGenre
+    genresController.getAllGenre
   );
   router.post(
     '/v1/genre',

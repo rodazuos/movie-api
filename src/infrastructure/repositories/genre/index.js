@@ -11,29 +11,19 @@ module.exports = (dbContext) => {
     return dataValues;
   };
 
-  const getByFilters = async (filters) => {
-    const whereConditions = { [Op.or]: [{ ...filters }] };
-
-    const queryResult = await model.findOne({ where: whereConditions });
-    if (!queryResult) {
-      return null;
-    }
-
-    const { dataValues } = queryResult;
-    return dataValues;
-  };
-
-  const getById = async (id, { includeDeleted = false } = {}) => {
-    const whereConditions = includeDeleted ? { id } : { [Op.and]: [{ id }, notDeletedClause] };
-
-    const queryResult = await model.findOne({ where: whereConditions });
+  const getAll = async () => {
+    const queryResult = await model.findAll({ order: [['description', 'ASC']] });
 
     if (!queryResult) {
       return null;
     }
 
-    const { dataValues } = queryResult;
-    return dataValues;
+    const entities = queryResult.map((data) => {
+      const { dataValues } = data;
+      return dataValues;
+    });
+
+    return entities;
   };
 
   const update = async (genreModel) => {
@@ -69,9 +59,8 @@ module.exports = (dbContext) => {
 
   return {
     create,
-    getById,
     logicDeleteById,
     update,
-    getByFilters
+    getAll
   };
 };

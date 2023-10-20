@@ -17,13 +17,17 @@ module.exports = (dbContext) => {
     return dataValues;
   };
 
-  const getByFilters = async (filters) => {
+  const getByFilters = async (filters, idMovieUpdate = false) => {
     const preparedFilters = Object.entries(filters).map((filter) => {
       const newObjectFilter = { [filter[0]]: { [Op.eq]: filter[1] } };
       return newObjectFilter;
     });
-    const whereConditions = { [Op.or]: preparedFilters };
+    let whereConditions = { [Op.or]: preparedFilters };
+    if (idMovieUpdate) {
+      whereConditions = { id: { [Op.ne]: parseInt(idMovieUpdate) }, [Op.or]: preparedFilters };
+    }
     const queryResult = await model.findOne({ where: whereConditions });
+
     if (!queryResult) {
       return null;
     }

@@ -1,6 +1,6 @@
 const { OK } = require('http-status');
 const MovieDomain = require('../../../../domain/movie');
-const { sanitizeMovie } = require('../../forms/movie');
+const { sanitizeCreateMovie, sanitizeUpdateMovie } = require('../../forms/movie');
 
 module.exports = ({ repository }) => {
   const { movieRepository, movieCastRepository, movieGenreRepository } = repository;
@@ -18,7 +18,7 @@ module.exports = ({ repository }) => {
 
   const createMovie = async (ctx) => {
     try {
-      const dataValid = await sanitizeMovie(ctx.request.body);
+      const dataValid = await sanitizeCreateMovie(ctx.request.body);
       const movie = {
         ...dataValid
       };
@@ -40,7 +40,7 @@ module.exports = ({ repository }) => {
   const updateMovie = async (ctx) => {
     try {
       const { id } = ctx.request.params;
-      const dataValid = await sanitizeMovie(ctx.request.body);
+      const dataValid = await sanitizeUpdateMovie(ctx.request.body);
       const movie = {
         id,
         ...dataValid
