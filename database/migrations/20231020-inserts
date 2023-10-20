@@ -1,0 +1,45 @@
+insert into users (type_account, cpf, name, "password") values (1,'08264147020','Admin do Sistema','8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92');
+insert into users (type_account, cpf, name, "password") values (2,'82601773073','Usuário do Sistema','8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92');
+insert into users (type_account, cpf, name, "password", deleted_at) values (2,'52502958008','Usuário Deletado','8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', NOW());
+
+
+insert into cast_profiles (description) values ('Diretor');
+insert into cast_profiles (description) values ('Ator');
+insert into cast_profiles (description) values ('Audiovisual');
+insert into cast_profiles (description) values ('Fotografo');
+insert into cast_profiles (description) values ('Maqueador');
+insert into cast_profiles (description) values ('Roteirista');
+
+
+insert into genres (description) values ('Ação');
+insert into genres (description) values ('Aventura');
+insert into genres (description) values ('Comédia');
+insert into genres (description) values ('Drama');
+insert into genres (description) values ('Documentário');
+insert into genres (description) values ('Fantasia');
+insert into genres (description) values ('Ficção científica');
+insert into genres (description) values ('Musical');
+insert into genres (description) values ('Romance');
+insert into genres (description) values ('Suspense');
+insert into genres (description) values ('Terror');
+
+insert into movies (title, original_title, release_year,age_group,duration,description,poster) values ('O Senhor dos Anéis: O Retorno do Rei', 'The Lord of the Rings: The Return of the King', '2003', '14', '3 h 21 min', 'Gandalf e Aragorn lideram o Mundo dos Homens contra o exército de Sauron para desviar o olhar de Frodo e Sam quando eles se aproximam á Montanha da Perdição com o Um Anel.', 'https://m.media-amazon.com/images/M/MV5BNzZiOTI4MWItZGMxZC00NjZkLWJlOWUtMDY5YzE1NzhiNGRhXkEyXkFqcGdeQXVyODc0OTEyNDU@._V1_.jpg' );
+insert into movies_cast (id_movie, id_cast_profile, "name") values (1,1,'Peter Jackson');
+insert into movies_cast (id_movie, id_cast_profile, "name", character_name, photo) values (1,2,'Elijah Wood','Frodo','https://m.media-amazon.com/images/M/MV5BMTM0NDIxMzQ5OF5BMl5BanBnXkFtZTcwNzAyNTA4Nw@@._V1_QL75_UX140_CR0,12,140,140_.jpg');
+insert into movies_cast (id_movie, id_cast_profile, "name", character_name, photo) values (1,2,'Viggo Mortensen', 'Aragorn', 'https://m.media-amazon.com/images/M/MV5BNDQzOTg4NzA2Nl5BMl5BanBnXkFtZTcwMzkwNjkxMg@@._V1_QL75_UX140_CR0,11,140,140_.jpg');
+insert into movies_genres (id_movie, id_genre) values (1,1);
+insert into movies_genres (id_movie, id_genre) values (1,2);
+insert into movies_genres (id_movie, id_genre) values (1,4);
+
+insert into movies (title, original_title, release_year,age_group,duration,description,poster) values ('Se Beber, Não Case!', 'The Hangover', '2009', '14','1 h 40 min','Tres amigos se acordam duma despedida de solteiro em As Vegas sem memoria da noite anterior e o solteiro desaparecido. Eles vão lhe procurar pela cidade toda antes do casamento.','https://m.media-amazon.com/images/M/MV5BNTdlYjczNzUtYjIwYS00NjM3LTlkZmQtYTZkODgwNjU3NTZmXkEyXkFqcGdeQXVyMTAyOTE2ODg0._V1_.jpg');
+insert into movies_cast (id_movie, id_cast_profile, "name") values (2,1,'Todd Phillips');
+insert into movies_cast (id_movie, id_cast_profile, "name", character_name, photo) values (2,2,'Zach Galifianakis','Alan','https://m.media-amazon.com/images/M/MV5BMTQwNzI3NjIwMV5BMl5BanBnXkFtZTcwMzA1OTIwMw@@._V1_QL75_UX140_CR0,10,140,140_.jpg');
+insert into movies_cast (id_movie, id_cast_profile, "name", character_name, photo) values (2,2,'Bradley Cooper', 'Phil', 'https://m.media-amazon.com/images/M/MV5BMjM0OTIyMzY1M15BMl5BanBnXkFtZTgwMTg0OTE0NzE@._V1_QL75_UX140_CR0,15,140,140_.jpg');
+insert into movies_genres (id_movie, id_genre) values (2,3);
+
+insert into movies (title, original_title, release_year,age_group,duration,description,poster) values ('Velozes & Furiosos 4','Fast & Furious','2009','14','1 h 47 min','Depois de voltar a trabalhar com o FBI em Los Angeles, Brian O''Conner se une a Dominic Toretto para acabar com um importador de heroína, se infiltrando em sua operação.','https://m.media-amazon.com/images/M/MV5BMjE2YzM3NWMtM2ViYS00MTJlLTlmN2EtZWFlYTdkZDkyOGIwXkEyXkFqcGdeQXVyMTAyOTE2ODg0._V1_.jpg');
+insert into movies_cast (id_movie, id_cast_profile, "name") values (3,1,'Justin Lin');
+insert into movies_cast (id_movie, id_cast_profile, "name", character_name, photo) values (3,2,'Vin Diesel','Dominic Toretto','https://m.media-amazon.com/images/M/MV5BMjExNzA4MDYxN15BMl5BanBnXkFtZTcwOTI1MDAxOQ@@._V1_QL75_UX140_CR0,4,140,140_.jpg');
+insert into movies_cast (id_movie, id_cast_profile, "name", character_name, photo) values (3,2,'Paul Walker', 'Brian O''Conner', 'https://m.media-amazon.com/images/M/MV5BMjIwODc0OTk2Nl5BMl5BanBnXkFtZTcwOTQ5MDA0Mg@@._V1_QL75_UX140_CR0,13,140,140_.jpg');
+insert into movies_genres (id_movie, id_genre) values (3,1);
+insert into movies_genres (id_movie, id_genre) values (3,10);
