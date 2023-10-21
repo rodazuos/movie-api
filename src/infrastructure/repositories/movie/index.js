@@ -83,7 +83,7 @@ module.exports = (dbContext) => {
 
   const prepareQuerySearch = (filters, hasTotal) => {
     let query = ` select distinct 
-    m.id, m.title, m.original_title, m.release_year, m.age_group, m.duration, m.description, m.poster `;
+    m.id, m.title, m.original_title, m.release_year, m.age_group, m.duration, m.description, m.poster, m.deleted_at `;
     if (hasTotal) {
       query = `select count(distinct m.id) as total`;
     }
@@ -117,7 +117,7 @@ module.exports = (dbContext) => {
     }
 
     const limit = filters.limit ? filters.limit : 10;
-    const offset = filters.page ? filters.page * limit : 0;
+    const offset = filters.page && filters.page > 1 ? (filters.page - 1) * limit : 0;
 
     if (!hasTotal) {
       query = query + ` order by title ASC limit ${limit} offset ${offset};`;
@@ -137,7 +137,7 @@ module.exports = (dbContext) => {
 
     return {
       total: parseInt(queryTotalResult[0].total),
-      page: filters.page,
+      page: filters.page || 1,
       queryResult
     };
   };

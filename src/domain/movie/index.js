@@ -12,7 +12,7 @@ const returnMovieData = (movie, castList, genreList, averageVote, includeIdentif
     poster: movie.poster,
     lastUpdated: movie.updateAt || movie.createdAt,
     averageVote: averageVote ? parseFloat(averageVote) : 0,
-    isActive: movie.deletedAt === null,
+    isActive: movie.deletedAt ? movie.deletedAt === null : movie.deleted_at === null,
     cast: castList.map((castProfile) => {
       const dataObject = new Object({
         description: castProfile.description,
@@ -116,7 +116,7 @@ const deleteMovie = async ({ movieRepository, id }) => {
     throw NotFoundException('Filme não encontrado!');
   }
 
-  return returnMovieData(result);
+  return true;
 };
 
 const voteMovie = async ({ movieVoteRepository, voteData }) => {

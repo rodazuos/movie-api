@@ -49,7 +49,7 @@ module.exports = (dbContext) => {
 
   const getAverageListMovies = async (listMoviesId) => {
     const queryResult = await rawSelectQuery(
-      `select id_movie, avg(vote) as average_vote  from movies_vote where id_movie in (:listMoviesId) group by id_movie order by id_movie asc;`,
+      `select id_movie, ROUND(avg(vote),1) as average_vote  from movies_vote where id_movie in (:listMoviesId) group by id_movie order by id_movie asc;`,
       { listMoviesId: listMoviesId }
     );
 

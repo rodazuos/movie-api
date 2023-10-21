@@ -54,10 +54,23 @@ module.exports = (dbContext) => {
     return dataValues;
   };
 
+  const getByFilters = async (filters) => {
+    const whereConditions = { [Op.or]: [{ ...filters }] };
+
+    const queryResult = await model.findOne({ where: whereConditions });
+    if (!queryResult) {
+      return null;
+    }
+
+    const { dataValues } = queryResult;
+    return dataValues;
+  };
+
   return {
     create,
     getAll,
     logicDeleteById,
-    update
+    update,
+    getByFilters
   };
 };
