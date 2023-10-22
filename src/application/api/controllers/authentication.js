@@ -2,17 +2,18 @@ const { OK } = require('http-status');
 const AuthorizationDomain = require('../../../domain/authorization');
 const Logger = require('../../../utils/logger');
 
+const { sanitizeLogin } = require('../forms/login');
+
 module.exports = ({ repository }) => {
   const { userRepository } = repository;
 
   const login = async (ctx) => {
     try {
-      const { cpf, password } = ctx.request.body;
+      const data = await sanitizeLogin(ctx.request.body);
 
       const result = await AuthorizationDomain.getAuthorization({
         userRepository,
-        cpf,
-        password
+        ...data
       });
 
       ctx.status = OK;
