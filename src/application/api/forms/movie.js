@@ -19,20 +19,20 @@ const sanitizeCreateMovie = async (data) => {
     ageGroup: Joi.string().required(),
     duration: Joi.string().required(),
     description: Joi.string().required(),
-    poster: Joi.string().required(),
-    cast: Joi.array()
-      .items({
-        idCastProfile: Joi.number().required(),
-        name: Joi.string().required(),
-        characterName: Joi.string(),
-        photo: Joi.string()
-      })
-      .required(),
-    genres: Joi.array()
-      .items({
-        idGenre: Joi.number().required()
-      })
-      .required()
+    poster: Joi.string().required()
+  });
+
+  return validateSchema(schema, data);
+};
+
+
+const sanitizeCreateCastMovie = async (data) => {
+  const schema = Joi.object({
+    idMovie: Joi.number().required(),
+    idCastProfile: Joi.number().required(),
+    name: Joi.string().required(),
+    characterName: Joi.string(),
+    photo: Joi.string()
   });
 
   return validateSchema(schema, data);
@@ -40,6 +40,7 @@ const sanitizeCreateMovie = async (data) => {
 
 const sanitizeUpdateMovie = async (data) => {
   const schema = Joi.object({
+    id: Joi.number(),
     title: Joi.string().required(),
     originalTitle: Joi.string(),
     releaseYear: Joi.string().required(),
@@ -47,32 +48,7 @@ const sanitizeUpdateMovie = async (data) => {
     duration: Joi.string().required(),
     description: Joi.string().required(),
     poster: Joi.string().required(),
-    cast: Joi.array()
-      .items({
-        id: Joi.number().required(),
-        idCastProfile: Joi.number().required(),
-        name: Joi.string().required(),
-        characterName: Joi.string(),
-        photo: Joi.string(),
-        delete: Joi.boolean()
-      })
-      .required(),
-    cast_new: Joi.array().items({
-      idCastProfile: Joi.number().required(),
-      name: Joi.string().required(),
-      characterName: Joi.string(),
-      photo: Joi.string()
-    }),
-    genres: Joi.array()
-      .items({
-        id: Joi.number().required(),
-        idGenre: Joi.number().required(),
-        delete: Joi.boolean()
-      })
-      .required(),
-    genres_new: Joi.array().items({
-      idGenre: Joi.number().required()
-    })
+    active: Joi.boolean().required()
   });
 
   return validateSchema(schema, data);
@@ -103,4 +79,4 @@ const sanitizeFiltersListMovie = async (data) => {
   return validateSchema(schema, data);
 };
 
-module.exports = { sanitizeCreateMovie, sanitizeUpdateMovie, sanitizeMovieVote, sanitizeFiltersListMovie };
+module.exports = { sanitizeCreateMovie, sanitizeUpdateMovie, sanitizeMovieVote, sanitizeFiltersListMovie, sanitizeCreateCastMovie };

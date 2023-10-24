@@ -4,7 +4,8 @@ const {
   sanitizeCreateMovie,
   sanitizeUpdateMovie,
   sanitizeMovieVote,
-  sanitizeFiltersListMovie
+  sanitizeFiltersListMovie,
+  sanitizeCreateCastMovie
 } = require('../../forms/movie');
 const Logger = require('../../../../utils/logger');
 
@@ -16,10 +17,7 @@ module.exports = ({ repository }) => {
       const { id } = ctx.request.params;
       const result = await MovieDomain.getMovie({
         movieRepository,
-        id,
-        movieCastRepository,
-        movieGenreRepository,
-        movieVoteRepository
+        id
       });
       ctx.status = OK;
       ctx.body = result;
@@ -38,9 +36,7 @@ module.exports = ({ repository }) => {
 
       const result = await MovieDomain.createMovie({
         movieRepository,
-        movie,
-        movieCastRepository,
-        movieGenreRepository
+        movie
       });
 
       ctx.status = OK;
@@ -62,9 +58,7 @@ module.exports = ({ repository }) => {
 
       const result = await MovieDomain.updateMovie({
         movieRepository,
-        movie,
-        movieCastRepository,
-        movieGenreRepository
+        movie
       });
 
       ctx.status = OK;
@@ -124,12 +118,73 @@ module.exports = ({ repository }) => {
     }
   };
 
+  const addGenreMovie = async (ctx) => {
+    try {
+      const { idGenre, idMovie } = ctx.request.body;
+
+      const modelGenreMovie = {
+        idGenre,
+        idMovie
+      };
+
+      const result = await MovieDomain.addGenreMovie({ modelGenreMovie, movieGenreRepository});
+      ctx.status = OK;
+      ctx.body = result;
+    } catch (error) {
+      Logger.error(error);
+      throw error;
+    }
+  }
+
+  const deleteGenreMovie = async (ctx) => {
+    try {
+      const { id } = ctx.request.params;
+      await MovieDomain.deleteGenreMovie({ id, movieGenreRepository});
+      ctx.status = OK;
+    } catch (error) {
+      Logger.error(error);
+      throw error;
+    }
+  }
+
+  const addCastMovie = async (ctx) => {
+    try {
+      const dataValid = await sanitizeCreateCastMovie(ctx.request.body);
+
+      const modelCastMovie = {
+        ...dataValid
+      };
+
+      const result = await MovieDomain.addCastMovie({ modelCastMovie, movieCastRepository});
+      ctx.status = OK;
+      ctx.body = result;
+    } catch (error) {
+      Logger.error(error);
+      throw error;
+    }
+  }
+
+  const deleteCastMovie = async (ctx) => {
+    try {
+      const { id } = ctx.request.params;
+      await MovieDomain.deleteCastMovie({ id, movieCastRepository});
+      ctx.status = OK;
+    } catch (error) {
+      Logger.error(error);
+      throw error;
+    }
+  }
+
   return {
     getMovie,
     createMovie,
     updateMovie,
     deleteMovie,
     voteMovie,
-    listMovies
+    listMovies,
+    addGenreMovie,
+    deleteGenreMovie,
+    addCastMovie,
+    deleteCastMovie
   };
 };

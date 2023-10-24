@@ -79,6 +79,34 @@ module.exports = ({
     movieController.deleteMovie
   );
 
+  router.post(
+    '/v1/movie/genre',
+    verifyAuthenticationMiddleware.verifyAuthentication,
+    adminAuthorizationMiddleare.adminAuthorization,
+    movieController.addGenreMovie
+  );
+
+  router.delete(
+    '/v1/movie/genre/:id',
+    verifyAuthenticationMiddleware.verifyAuthentication,
+    adminAuthorizationMiddleare.adminAuthorization,
+    movieController.deleteGenreMovie
+  );
+
+  router.post(
+    '/v1/movie/cast',
+    verifyAuthenticationMiddleware.verifyAuthentication,
+    adminAuthorizationMiddleare.adminAuthorization,
+    movieController.addCastMovie
+  );
+
+  router.delete(
+    '/v1/movie/cast/:id',
+    verifyAuthenticationMiddleware.verifyAuthentication,
+    adminAuthorizationMiddleare.adminAuthorization,
+    movieController.deleteCastMovie
+  );
+
   router.get('/v1/movies/list', verifyAuthenticationMiddleware.verifyAuthentication, movieController.listMovies);
   router.post(
     '/v1/movie/:id/vote',

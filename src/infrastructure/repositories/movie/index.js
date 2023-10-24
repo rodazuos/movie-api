@@ -53,8 +53,12 @@ module.exports = (dbContext) => {
   const update = async (movieModel) => {
     movieModel.updatedAt = dbContext.sequelize.literal("timezone('utc', now())");
 
+    if (movieModel.active) {
+      movieModel.deletedAt = null;
+    }
+
     const whereConditions = {
-      [Op.and]: [{ id: movieModel.id }, notDeletedClause]
+      [Op.and]: [{ id: movieModel.id }]
     };
     const entityToUpdated = await model.findOne({ where: whereConditions });
     if (!entityToUpdated) {
@@ -91,10 +95,10 @@ module.exports = (dbContext) => {
     query =
       query +
       ` from movies m
-    inner join movies_cast mc on m.id = mc.id_movie
-    inner join movies_genres mg on m.id = mg.id_movie
-    inner join cast_profiles cp on mc.id_cast_profile = cp.id
-    inner join genres g on mg.id_genre = g.id `;
+    left join movies_cast mc on m.id = mc.id_movie
+    left join movies_genres mg on m.id = mg.id_movie
+    left join cast_profiles cp on mc.id_cast_profile = cp.id
+    left join genres g on mg.id_genre = g.id `;
 
     if (filters) {
       let queryFilters = [];

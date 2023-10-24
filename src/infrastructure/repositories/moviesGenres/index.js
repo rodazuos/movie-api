@@ -1,25 +1,42 @@
 module.exports = (dbContext) => {
   const model = dbContext.models.movies_genres;
+  const { Op } = dbContext.sequelize;
   const rawSelectQuery = dbContext.rawSelectQuery;
 
-  const createMultipleEntries = async (movieId, listGenres) => {
-    listGenres.forEach((genre) => {
-      genre.idMovie = movieId;
+  const create = async (idMovie, idGenre) => {
+    const { dataValues } = await model.create({
+      idMovie,
+      idGenre
     });
-    const { dataValues } = await model.bulkCreate(listGenres);
+
     return dataValues;
   };
 
-  const updateMultipleEntries = async (movieId, listGenres) => {
-    listGenres.forEach((genre) => {
-      genre.idMovie = movieId;
-      genre.updatedAt = dbContext.sequelize.literal("timezone('utc', now())");
-      if (genre.delete) {
-        genre.deletedAt = dbContext.sequelize.literal("timezone('utc', now())");
-      }
-    });
-    const { dataValues } = await model.bulkCreate(listGenres, { updateOnDuplicate: ['updatedAt', 'deletedAt'] });
+  const getById = async (idMovie, idGenre) => {
+    const whereConditions ={ [Op.and]: [{ idMovie }, { idGenre }] };
+
+    const queryResult = await model.findOne({ where: whereConditions });
+
+    if (!queryResult) {
+      return null;
+    }
+
+    const { dataValues } = queryResult;
     return dataValues;
+  };
+
+  const deleteById = async (id) => {
+    const entity = await model.findOne({
+      where: { [Op.and]: [{ id }] }
+    });
+
+    if (!entity) {
+      return null;
+    }
+
+    await entity.destroy();
+
+    return true;
   };
 
   const getAllByMovieId = async (idMovie) => {
@@ -55,8 +72,9 @@ module.exports = (dbContext) => {
   };
 
   return {
-    createMultipleEntries,
-    updateMultipleEntries,
+    create,
+    getById,
+    deleteById,
     getAllByMovieId,
     getGenreInListMovieId
   };

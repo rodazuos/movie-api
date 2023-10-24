@@ -1,6 +1,9 @@
 const { NotFoundException, ConflictException, InternalServerException } = require('../../infrastructure/errors');
 
 const returnMovieData = (movie, castList, genreList, averageVote, includeIdentification = false) => {
+
+  const deletedDate = movie?.deletedAt || movie?.deleted_at;
+
   const normalizedata = {
     id: movie.id,
     title: movie.title,
@@ -11,9 +14,12 @@ const returnMovieData = (movie, castList, genreList, averageVote, includeIdentif
     description: movie.description,
     poster: movie.poster,
     lastUpdated: movie.updateAt || movie.createdAt,
-    averageVote: averageVote ? parseFloat(averageVote) : 0,
-    isActive: movie.deletedAt ? movie.deletedAt === null : movie.deleted_at === null,
-    cast: castList.map((castProfile) => {
+    isActive: deletedDate === null || deletedDate === undefined,
+    averageVote:  averageVote ? parseFloat(averageVote) : 0
+  };
+  
+  if (castList.length > 0) {
+    normalizedata.cast = castList.map((castProfile) => {
       const dataObject = new Object({
         description: castProfile.description,
         name: castProfile.name,
@@ -24,20 +30,23 @@ const returnMovieData = (movie, castList, genreList, averageVote, includeIdentif
         (dataObject.id = castProfile.id), (dataObject.idCastProfile = castProfile.id_cast_profile);
       }
       return dataObject;
-    }),
-    genre: genreList.map((genre) => {
+    })
+  };
+
+  if (genreList.length > 0) {
+    normalizedata.genres = genreList.map((genre) => {
       const dataObject = new Object({ description: genre.description });
       if (includeIdentification) {
         (dataObject.id = genre.id), (dataObject.idGenre = genre.id_genre);
       }
       return dataObject;
-    })
-  };
+    });
+  }
 
   return normalizedata;
 };
 
-const getMovie = async ({ movieRepository, id, movieCastRepository, movieGenreRepository, movieVoteRepository }) => {
+const getMovie = async ({ movieRepository, id }) => {
   const movie = await movieRepository.getById(id, {
     includeDeleted: true
   });
@@ -46,15 +55,11 @@ const getMovie = async ({ movieRepository, id, movieCastRepository, movieGenreRe
     throw NotFoundException('Filme não encontrado!');
   }
 
-  const castList = await movieCastRepository.getAllByMovieId(movie.id);
-  const genreList = await movieGenreRepository.getAllByMovieId(movie.id);
-  const averageVote = await movieVoteRepository.getAverageVotes(movie.id);
-
-  const includeIdentification = true;
-  return returnMovieData(movie, castList, genreList, averageVote, includeIdentification);
+    const includeIdentification = true;
+  return returnMovieData(movie, [], [], null, includeIdentification);
 };
 
-const createMovie = async ({ movieRepository, movie, movieCastRepository, movieGenreRepository }) => {
+const createMovie = async ({ movieRepository, movie }) => {
   const objectFilters = { title: movie.title };
   if (movie.originalTitle) {
     objectFilters.originalTitle = movie.originalTitle;
@@ -67,16 +72,16 @@ const createMovie = async ({ movieRepository, movie, movieCastRepository, movieG
 
   const result = await movieRepository.create({ ...movie });
 
-  await movieCastRepository.createMultipleEntries(result.id, movie.cast);
-  await movieGenreRepository.createMultipleEntries(result.id, movie.genres);
+  // await movieCastRepository.createMultipleEntries(result.id, movie.cast);
+  // await movieGenreRepository.createMultipleEntries(result.id, movie.genres);
 
-  const castList = await movieCastRepository.getAllByMovieId(result.id);
-  const genreList = await movieGenreRepository.getAllByMovieId(result.id);
+  // const castList = await movieCastRepository.getAllByMovieId(result.id);
+  // const genreList = await movieGenreRepository.getAllByMovieId(result.id);
 
-  return returnMovieData(result, castList, genreList);
+  return returnMovieData(result, [], []);
 };
 
-const updateMovie = async ({ movieRepository, movie, movieCastRepository, movieGenreRepository }) => {
+const updateMovie = async ({ movieRepository, movie }) => {
   const objectFilters = { title: movie.title };
   if (movie.originalTitle) {
     objectFilters.originalTitle = movie.originalTitle;
@@ -93,20 +98,20 @@ const updateMovie = async ({ movieRepository, movie, movieCastRepository, movieG
     throw NotFoundException('Filme não encontrado!');
   }
 
-  await movieCastRepository.updateMultipleEntries(result.id, movie.cast);
-  if (movie.cast_new) {
-    await movieCastRepository.createMultipleEntries(result.id, movie.cast_new);
-  }
+  // await movieCastRepository.updateMultipleEntries(result.id, movie.cast);
+  // if (movie.cast_new) {
+  //   await movieCastRepository.createMultipleEntries(result.id, movie.cast_new);
+  // }
 
-  await movieGenreRepository.updateMultipleEntries(result.id, movie.genres);
-  if (movie.genres_new) {
-    await movieGenreRepository.createMultipleEntries(result.id, movie.genres_new);
-  }
+  // await movieGenreRepository.updateMultipleEntries(result.id, movie.genres);
+  // if (movie.genres_new) {
+  //   await movieGenreRepository.createMultipleEntries(result.id, movie.genres_new);
+  // }
 
-  const castList = await movieCastRepository.getAllByMovieId(result.id);
-  const genreList = await movieGenreRepository.getAllByMovieId(result.id);
+  // const castList = await movieCastRepository.getAllByMovieId(result.id);
+  // const genreList = await movieGenreRepository.getAllByMovieId(result.id);
 
-  return returnMovieData(result, castList, genreList);
+  return returnMovieData(result, [], []);
 };
 
 const deleteMovie = async ({ movieRepository, id }) => {
@@ -161,11 +166,57 @@ const listMovies = async ({
   return { data: 0, total: 0, page: 0};
 };
 
+const addGenreMovie = async ({ modelGenreMovie, movieGenreRepository }) => {
+  const userExists = await movieGenreRepository.getById(modelGenreMovie.idMovie, modelGenreMovie.idGenre);
+  if (userExists) {
+    throw ConflictException('Usuário já cadastrado!');
+  }
+  
+  const result = await movieGenreRepository.create(modelGenreMovie.idMovie, modelGenreMovie.idGenre);
+  return result;
+}
+
+const deleteGenreMovie = async ({ id, movieGenreRepository }) => {
+  const result = await movieGenreRepository.deleteById(id);
+
+  if (!result) {
+    throw NotFoundException('Gênero não encontrado!');
+  }
+
+  return result;
+}
+
+const addCastMovie = async ({ modelCastMovie, movieCastRepository }) => {
+  const castExists = await movieCastRepository.findByName(
+    modelCastMovie.name, modelCastMovie.characterName, modelCastMovie.idMovie, modelCastMovie.idCastProfile
+  );
+  if (castExists) {
+    throw ConflictException('Pessoa já cadastrada no elenco do filme!');
+  }
+  
+  const result = await movieCastRepository.create(modelCastMovie);
+  return result;
+}
+
+const deleteCastMovie = async ({ id, movieCastRepository }) => {
+  const result = await movieCastRepository.deleteById(id);
+
+  if (!result) {
+    throw NotFoundException('Pessoa não encontrada no elenco!');
+  }
+
+  return result;
+}
+
 module.exports = {
   createMovie,
   getMovie,
   updateMovie,
   deleteMovie,
   voteMovie,
-  listMovies
+  listMovies,
+  addGenreMovie,
+  deleteGenreMovie,
+  addCastMovie,
+  deleteCastMovie
 };

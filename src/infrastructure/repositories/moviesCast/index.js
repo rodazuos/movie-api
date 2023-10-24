@@ -1,28 +1,41 @@
 module.exports = (dbContext) => {
   const model = dbContext.models.movies_cast;
+  const { Op } = dbContext.sequelize;
   const rawSelectQuery = dbContext.rawSelectQuery;
 
-  const createMultipleEntries = async (movieId, listMovieCast) => {
-    listMovieCast.forEach((castProfile) => {
-      castProfile.idMovie = movieId;
+  const create = async (modelCastMovie) => {
+    const { dataValues } = await model.create({
+      ...modelCastMovie
     });
-    const { dataValues } = await model.bulkCreate(listMovieCast);
+
     return dataValues;
   };
 
-  const updateMultipleEntries = async (movieId, listMovieCast) => {
-    listMovieCast.forEach((castProfile) => {
-      castProfile.idMovie = movieId;
-      castProfile.updatedAt = dbContext.sequelize.literal("timezone('utc', now())");
-      if (castProfile.delete) {
-        castProfile.deletedAt = dbContext.sequelize.literal("timezone('utc', now())");
-      }
+  const findByName = async (name, characterName, idMovie, idCastProfile) => {
+    const whereConditions ={ [Op.and]: [{ name }, { characterName }, { idMovie }, { idCastProfile }] };
+
+    const queryResult = await model.findOne({ where: whereConditions });
+
+    if (!queryResult) {
+      return null;
+    }
+
+    const { dataValues } = queryResult;
+    return dataValues;
+  };
+
+  const deleteById = async (id) => {
+    const entity = await model.findOne({
+      where: { [Op.and]: [{ id }] }
     });
 
-    const { dataValues } = await model.bulkCreate(listMovieCast, {
-      updateOnDuplicate: ['idCastProfile', 'name', 'characterName', 'photo', 'updatedAt', 'deletedAt']
-    });
-    return dataValues;
+    if (!entity) {
+      return null;
+    }
+
+    await entity.destroy();
+
+    return true;
   };
 
   const getAllByMovieId = async (idMovie) => {
@@ -58,8 +71,9 @@ module.exports = (dbContext) => {
   };
 
   return {
-    createMultipleEntries,
-    updateMultipleEntries,
+    create,
+    findByName,
+    deleteById,
     getAllByMovieId,
     getCastInListMovieId
   };
