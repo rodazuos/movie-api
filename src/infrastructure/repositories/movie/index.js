@@ -97,30 +97,34 @@ module.exports = (dbContext) => {
     inner join genres g on mg.id_genre = g.id `;
 
     if (filters) {
-      query = query + ' where';
+      let queryFilters = [];
       if (filters.title) {
-        query = query + ` lower(title) like '%${filters.title.toLowerCase()}%'`;
+        queryFilters.push(` lower(title) like '%${filters.title.toLowerCase()}%'`);
       }
 
       if (filters.genre) {
-        query = query + ` and lower(g.description) like '%${filters.genre.toLowerCase()}%'`;
+        queryFilters.push(` lower(g.description) like '%${filters.genre.toLowerCase()}%'`);
       }
 
       if (filters.director && filters.actor) {
-        query =
-          query + ` and  (lower(mc."name") like '%${filters.director}%' or lower(mc."name") like '%${filters.actor}%')`;
+        queryFilters.push(` (lower(mc."name") like '%${filters.director}%' or lower(mc."name") like '%${filters.actor}%')`);
       } else if (filters.director) {
-        query = query + ` and  lower(mc."name") like '%${filters.director}%'`;
+        queryFilters.push(` lower(mc."name") like '%${filters.director}%'`);
       } else if (filters.actor) {
-        query = query + ` and  lower(mc."name") like '%${filters.actor}%'`;
+        queryFilters.push(` lower(mc."name") like '%${filters.actor}%'`);
       }
-    }
 
-    const limit = filters.limit ? filters.limit : 10;
-    const offset = filters.page && filters.page > 1 ? (filters.page - 1) * limit : 0;
-
-    if (!hasTotal) {
-      query = query + ` order by title ASC limit ${limit} offset ${offset};`;
+      if (queryFilters.length > 0) {
+        query = query + ' where';
+        query = query + queryFilters.join(' AND ');
+      }
+      
+      const limit = filters.limit ? filters.limit : 10;
+      const offset = filters.page && filters.page > 1 ? (filters.page - 1) * limit : 0;
+      
+      if (!hasTotal) {
+        query = query + ` order by title ASC limit ${limit} offset ${offset};`;
+      }
     }
 
     return query;

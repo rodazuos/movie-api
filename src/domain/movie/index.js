@@ -158,7 +158,7 @@ const listMovies = async ({
     };
   }
 
-  return [];
+  return { data: 0, total: 0, page: 0};
 };
 
 module.exports = {

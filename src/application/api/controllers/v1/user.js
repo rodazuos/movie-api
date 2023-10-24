@@ -1,6 +1,7 @@
 const { OK } = require('http-status');
 const UserDomain = require('../../../../domain/user');
 const Logger = require('../../../../utils/logger');
+const { sanitizeUpdatePassword } = require('../../forms/user');
 
 module.exports = ({ repository }) => {
   const { userRepository } = repository;
@@ -93,7 +94,7 @@ module.exports = ({ repository }) => {
 
   const updatePassword = async (ctx) => {
     try {
-      const { password } = ctx.request.body;
+      const { password } = await sanitizeUpdatePassword(ctx.request.body);
       const { id } = ctx.request.userState;
 
       await UserDomain.updatePassword({
