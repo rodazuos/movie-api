@@ -1,7 +1,7 @@
 const { OK } = require('http-status');
 const UserDomain = require('../../../../domain/user');
 const Logger = require('../../../../utils/logger');
-const { sanitizeUpdatePassword } = require('../../forms/user');
+const { sanitizeUpdatePassword, sanitizeFiltersListUser } = require('../../forms/user');
 
 module.exports = ({ repository }) => {
   const { userRepository } = repository;
@@ -25,6 +25,20 @@ module.exports = ({ repository }) => {
       const { id } = ctx.request.params;
 
       const result = await UserDomain.getUserById({ userRepository, id });
+
+      ctx.status = OK;
+      ctx.body = result;
+    } catch (error) {
+      Logger.error(error);
+      throw error;
+    }
+  };
+
+  const getUserList = async (ctx) => {
+    try {
+      const filters = await sanitizeFiltersListUser(ctx.request.query);
+
+      const result = await UserDomain.getUserList({ userRepository, filters });
 
       ctx.status = OK;
       ctx.body = result;
@@ -59,13 +73,14 @@ module.exports = ({ repository }) => {
   const updateUser = async (ctx) => {
     try {
       const { id } = ctx.request.params;
-      const { typeAccount, cpf, name } = ctx.request.body;
+      const { typeAccount, cpf, name, active } = ctx.request.body;
 
       const user = {
         id,
         typeAccount,
         cpf,
-        name
+        name,
+        active
       };
 
       const result = await UserDomain.updateUser({
@@ -113,6 +128,7 @@ module.exports = ({ repository }) => {
   return {
     getUserProfile,
     getUser,
+    getUserList,
     createUser,
     updateUser,
     deleteUser,

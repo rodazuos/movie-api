@@ -138,7 +138,7 @@ const listMovies = async ({
 }) => {
   const resultMovies = await movieRepository.getListMovies(filters);
 
-  if (resultMovies.queryResult.length > 0) {
+  if (resultMovies.total > 0) {
     const listMoviesId = resultMovies.queryResult.map((movie) => movie.id);
     const castMovies = await movieCastRepository.getCastInListMovieId(listMoviesId);
     const genresMovies = await movieGenreRepository.getGenreInListMovieId(listMoviesId);

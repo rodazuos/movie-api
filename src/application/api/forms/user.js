@@ -19,4 +19,14 @@ const sanitizeUpdatePassword = async (data) => {
   return validateSchema(schema, data);
 };
 
-module.exports = { sanitizeUpdatePassword };
+const sanitizeFiltersListUser = async (data) => {
+  const schema = Joi.object({
+    name: Joi.string(),
+    limit: Joi.number().min(1).max(10),
+    page: Joi.number()
+  });
+
+  return validateSchema(schema, data);
+};
+
+module.exports = { sanitizeUpdatePassword, sanitizeFiltersListUser };

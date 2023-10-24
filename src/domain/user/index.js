@@ -8,12 +8,16 @@ const TYPE_ACCOUNT_ENUM = Object.freeze({
 });
 
 const returnUserData = (user) => {
+  const typeAccount = user.typeAccount || user.type_account;
+  const deletedDate = user.deletedAt || user.deleted_at;
+
   return {
     id: user.id,
-    typeAccount: user.typeAccount,
+    typeAccount: typeAccount,
+    typeAccountDescription: typeAccount === TYPE_ACCOUNT_ENUM.ADMIN ? 'Administrador' : 'Usuário',
     cpf: user.cpf,
     name: user.name,
-    isActive: user.deletedAt === null
+    isActive: deletedDate === null || deletedDate === undefined
   };
 };
 
@@ -38,6 +42,20 @@ const getUserById = async ({ userRepository, id, includeDeleted = true }) => {
   }
 
   return returnUserData(user);
+};
+
+const getUserList = async ({ userRepository, filters, includeDeleted = true }) => {
+  const userList = await userRepository.getListUsers(filters, { includeDeleted });
+
+  if (userList.total > 0) {
+    const normalizedResult = userList.queryResult.map((user) => {
+      return returnUserData(user);
+    });
+
+    return { data: normalizedResult, total: userList.total, page: userList.page};
+  }
+
+  return  { data: 0, total: 0, page: 0};
 };
 
 const updateUser = async ({ userRepository, user }) => {
@@ -76,6 +94,7 @@ module.exports = {
   TYPE_ACCOUNT_ENUM,
   createUser,
   getUserById,
+  getUserList,
   updateUser,
   deleteUser,
   updatePassword

@@ -32,6 +32,14 @@ module.exports = ({
     adminAuthorizationMiddleare.adminAuthorization,
     userController.getUser
   );
+
+  router.get(
+    '/v1/users/list',
+    verifyAuthenticationMiddleware.verifyAuthentication,
+    adminAuthorizationMiddleare.adminAuthorization,
+    userController.getUserList
+  );
+
   router.post(
     '/v1/user',
     verifyAuthenticationMiddleware.verifyAuthentication,
