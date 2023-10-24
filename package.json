@@ -29,6 +29,7 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
+    "@koa/cors": "^4.0.0",
     "@koa/router": "^11.0.2",
     "awilix": "^9.0.0",
     "dotenv": "^16.3.1",
