@@ -61,6 +61,14 @@ Serviço para catalogar e classificar filmes.
 
 <br>
 
+## Coleção
+
+    Na raiz do projeto existe um arquivo `Insomnia.json` com todas as requests necessárias para utilizar o serviço, como Login, Lista de Filmes e etc.
+
 ## Extra
 
     Na raiz do projeto existe o arquivo `generateSecretToCrypto.js`. O script pode ser utilizado para gerar novas chaves de ecriptação. Altere os valores dentro do script e execute o comando no terminal `node generateSecretToCrypto.js`.
+
+
+## TODO
+    - Implementar testes na aplicação
