@@ -60,9 +60,21 @@ module.exports = (dbContext) => {
     return queryResult;
   };
 
+  const getUserVote = async (idMovie, idUser) => {
+    const queryResult = await model.findOne({ where: { idMovie: { [Op.eq]: idMovie }, idUser: { [Op.eq]: idUser } } });
+
+    if (!queryResult) {
+      return null;
+    }
+
+    const { dataValues } = queryResult;
+    return dataValues.vote;
+  };
+
   return {
     createUpdate,
     getAverageVotes,
-    getAverageListMovies
+    getAverageListMovies,
+    getUserVote
   };
 };

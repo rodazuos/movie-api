@@ -14,10 +14,17 @@ module.exports = ({ repository }) => {
 
   const getMovie = async (ctx) => {
     try {
+      const { full } = ctx.request.query;
       const { id } = ctx.request.params;
+      const { id: idUser } = ctx.request.userState;
       const result = await MovieDomain.getMovie({
         movieRepository,
-        id
+        id,
+        movieVoteRepository,
+        full,
+        movieGenreRepository,
+        movieCastRepository,
+        idUser
       });
       ctx.status = OK;
       ctx.body = result;

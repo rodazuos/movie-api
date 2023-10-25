@@ -1,6 +1,6 @@
 const { NotFoundException, ConflictException, InternalServerException } = require('../../infrastructure/errors');
 
-const returnMovieData = (movie, castList, genreList, averageVote, includeIdentification = false) => {
+const returnMovieData = (movie, castList, genreList, averageVote, includeIdentification = false, userVote) => {
   const deletedDate = movie?.deletedAt || movie?.deleted_at;
 
   const normalizedata = {
@@ -14,7 +14,8 @@ const returnMovieData = (movie, castList, genreList, averageVote, includeIdentif
     poster: movie.poster,
     lastUpdated: movie.updateAt || movie.createdAt,
     isActive: deletedDate === null || deletedDate === undefined,
-    averageVote: averageVote ? parseFloat(averageVote) : 0
+    averageVote: averageVote ? parseFloat(averageVote) : 0,
+    userVote
   };
 
   if (castList.length > 0) {
@@ -45,7 +46,15 @@ const returnMovieData = (movie, castList, genreList, averageVote, includeIdentif
   return normalizedata;
 };
 
-const getMovie = async ({ movieRepository, id }) => {
+const getMovie = async ({
+  movieRepository,
+  id,
+  movieVoteRepository,
+  full,
+  movieGenreRepository,
+  movieCastRepository,
+  idUser
+}) => {
   const movie = await movieRepository.getById(id, {
     includeDeleted: true
   });
@@ -54,8 +63,18 @@ const getMovie = async ({ movieRepository, id }) => {
     throw NotFoundException('Filme não encontrado!');
   }
 
+  let listGenresMovie = [];
+  let listCastProfileMovie = [];
+  let userVote = 0;
+  if (full) {
+    listGenresMovie = await movieGenreRepository.getAllByMovieId(id);
+    listCastProfileMovie = await movieCastRepository.getAllByMovieId(id);
+    userVote = await movieVoteRepository.getUserVote(id, idUser);
+  }
+  const averageVote = await movieVoteRepository.getAverageVotes(id);
+
   const includeIdentification = true;
-  return returnMovieData(movie, [], [], null, includeIdentification);
+  return returnMovieData(movie, listCastProfileMovie, listGenresMovie, averageVote, includeIdentification, userVote);
 };
 
 const createMovie = async ({ movieRepository, movie }) => {
@@ -142,7 +161,7 @@ const listMovies = async ({
     };
   }
 
-  return { data: 0, total: 0, page: 0 };
+  return { data: [], total: 0, page: 0 };
 };
 
 const addGenreMovie = async ({ modelGenreMovie, movieGenreRepository }) => {
