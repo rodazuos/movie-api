@@ -25,7 +25,6 @@ const sanitizeCreateMovie = async (data) => {
   return validateSchema(schema, data);
 };
 
-
 const sanitizeCreateCastMovie = async (data) => {
   const schema = Joi.object({
     idMovie: Joi.number().required(),
@@ -79,4 +78,10 @@ const sanitizeFiltersListMovie = async (data) => {
   return validateSchema(schema, data);
 };
 
-module.exports = { sanitizeCreateMovie, sanitizeUpdateMovie, sanitizeMovieVote, sanitizeFiltersListMovie, sanitizeCreateCastMovie };
+module.exports = {
+  sanitizeCreateMovie,
+  sanitizeUpdateMovie,
+  sanitizeMovieVote,
+  sanitizeFiltersListMovie,
+  sanitizeCreateCastMovie
+};

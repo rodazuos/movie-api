@@ -1,7 +1,6 @@
 const { NotFoundException, ConflictException, InternalServerException } = require('../../infrastructure/errors');
 
 const returnMovieData = (movie, castList, genreList, averageVote, includeIdentification = false) => {
-
   const deletedDate = movie?.deletedAt || movie?.deleted_at;
 
   const normalizedata = {
@@ -15,9 +14,9 @@ const returnMovieData = (movie, castList, genreList, averageVote, includeIdentif
     poster: movie.poster,
     lastUpdated: movie.updateAt || movie.createdAt,
     isActive: deletedDate === null || deletedDate === undefined,
-    averageVote:  averageVote ? parseFloat(averageVote) : 0
+    averageVote: averageVote ? parseFloat(averageVote) : 0
   };
-  
+
   if (castList.length > 0) {
     normalizedata.cast = castList.map((castProfile) => {
       const dataObject = new Object({
@@ -30,8 +29,8 @@ const returnMovieData = (movie, castList, genreList, averageVote, includeIdentif
         (dataObject.id = castProfile.id), (dataObject.idCastProfile = castProfile.id_cast_profile);
       }
       return dataObject;
-    })
-  };
+    });
+  }
 
   if (genreList.length > 0) {
     normalizedata.genres = genreList.map((genre) => {
@@ -55,7 +54,7 @@ const getMovie = async ({ movieRepository, id }) => {
     throw NotFoundException('Filme não encontrado!');
   }
 
-    const includeIdentification = true;
+  const includeIdentification = true;
   return returnMovieData(movie, [], [], null, includeIdentification);
 };
 
@@ -71,13 +70,6 @@ const createMovie = async ({ movieRepository, movie }) => {
   }
 
   const result = await movieRepository.create({ ...movie });
-
-  // await movieCastRepository.createMultipleEntries(result.id, movie.cast);
-  // await movieGenreRepository.createMultipleEntries(result.id, movie.genres);
-
-  // const castList = await movieCastRepository.getAllByMovieId(result.id);
-  // const genreList = await movieGenreRepository.getAllByMovieId(result.id);
-
   return returnMovieData(result, [], []);
 };
 
@@ -97,19 +89,6 @@ const updateMovie = async ({ movieRepository, movie }) => {
   if (!result) {
     throw NotFoundException('Filme não encontrado!');
   }
-
-  // await movieCastRepository.updateMultipleEntries(result.id, movie.cast);
-  // if (movie.cast_new) {
-  //   await movieCastRepository.createMultipleEntries(result.id, movie.cast_new);
-  // }
-
-  // await movieGenreRepository.updateMultipleEntries(result.id, movie.genres);
-  // if (movie.genres_new) {
-  //   await movieGenreRepository.createMultipleEntries(result.id, movie.genres_new);
-  // }
-
-  // const castList = await movieCastRepository.getAllByMovieId(result.id);
-  // const genreList = await movieGenreRepository.getAllByMovieId(result.id);
 
   return returnMovieData(result, [], []);
 };
@@ -163,18 +142,18 @@ const listMovies = async ({
     };
   }
 
-  return { data: 0, total: 0, page: 0};
+  return { data: 0, total: 0, page: 0 };
 };
 
 const addGenreMovie = async ({ modelGenreMovie, movieGenreRepository }) => {
   const userExists = await movieGenreRepository.getById(modelGenreMovie.idMovie, modelGenreMovie.idGenre);
   if (userExists) {
-    throw ConflictException('Usuário já cadastrado!');
+    throw ConflictException('Gênero já cadastrado!');
   }
-  
+
   const result = await movieGenreRepository.create(modelGenreMovie.idMovie, modelGenreMovie.idGenre);
   return result;
-}
+};
 
 const deleteGenreMovie = async ({ id, movieGenreRepository }) => {
   const result = await movieGenreRepository.deleteById(id);
@@ -184,19 +163,21 @@ const deleteGenreMovie = async ({ id, movieGenreRepository }) => {
   }
 
   return result;
-}
+};
 
 const addCastMovie = async ({ modelCastMovie, movieCastRepository }) => {
   const castExists = await movieCastRepository.findByName(
-    modelCastMovie.name, modelCastMovie.characterName, modelCastMovie.idMovie, modelCastMovie.idCastProfile
+    modelCastMovie.name,
+    modelCastMovie.idMovie,
+    modelCastMovie.idCastProfile
   );
   if (castExists) {
     throw ConflictException('Pessoa já cadastrada no elenco do filme!');
   }
-  
+
   const result = await movieCastRepository.create(modelCastMovie);
   return result;
-}
+};
 
 const deleteCastMovie = async ({ id, movieCastRepository }) => {
   const result = await movieCastRepository.deleteById(id);
@@ -206,7 +187,27 @@ const deleteCastMovie = async ({ id, movieCastRepository }) => {
   }
 
   return result;
-}
+};
+
+const listGenresByMovie = async ({ id, movieGenreRepository }) => {
+  const result = await movieGenreRepository.getAllByMovieId(id);
+
+  if (!result) {
+    throw NotFoundException('Nenhum resultado encontrado!');
+  }
+
+  return result;
+};
+
+const listCastByMovie = async ({ id, movieCastRepository }) => {
+  const result = await movieCastRepository.getAllByMovieId(id);
+
+  if (!result) {
+    throw NotFoundException('Nenhum resultado encontrado!');
+  }
+
+  return result;
+};
 
 module.exports = {
   createMovie,
@@ -218,5 +219,7 @@ module.exports = {
   addGenreMovie,
   deleteGenreMovie,
   addCastMovie,
-  deleteCastMovie
+  deleteCastMovie,
+  listGenresByMovie,
+  listCastByMovie
 };

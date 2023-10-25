@@ -52,10 +52,10 @@ const getUserList = async ({ userRepository, filters, includeDeleted = true }) =
       return returnUserData(user);
     });
 
-    return { data: normalizedResult, total: userList.total, page: userList.page};
+    return { data: normalizedResult, total: userList.total, page: userList.page };
   }
 
-  return  { data: 0, total: 0, page: 0};
+  return { data: 0, total: 0, page: 0 };
 };
 
 const updateUser = async ({ userRepository, user }) => {

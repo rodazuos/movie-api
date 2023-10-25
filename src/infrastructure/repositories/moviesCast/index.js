@@ -11,8 +11,8 @@ module.exports = (dbContext) => {
     return dataValues;
   };
 
-  const findByName = async (name, characterName, idMovie, idCastProfile) => {
-    const whereConditions ={ [Op.and]: [{ name }, { characterName }, { idMovie }, { idCastProfile }] };
+  const findByName = async (name, idMovie, idCastProfile) => {
+    const whereConditions = { [Op.and]: [{ name }, { idMovie }, { idCastProfile }] };
 
     const queryResult = await model.findOne({ where: whereConditions });
 

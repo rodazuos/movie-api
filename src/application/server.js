@@ -9,10 +9,15 @@ const Logger = require('../utils/logger');
 module.exports = ({ router }) => {
   const app = new koa();
 
-  app.use(koaCors({
-    credentials: true,
-    origin: ctx => corsOrigin(ctx)
-  })).use(bodyParser({ enableTypes: ['json'] })).use(router.routes());
+  app
+    .use(
+      koaCors({
+        credentials: true,
+        origin: (ctx) => corsOrigin(ctx)
+      })
+    )
+    .use(bodyParser({ enableTypes: ['json'] }))
+    .use(router.routes());
 
   return {
     app,

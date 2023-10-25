@@ -108,6 +108,17 @@ module.exports = ({
   );
 
   router.get('/v1/movies/list', verifyAuthenticationMiddleware.verifyAuthentication, movieController.listMovies);
+  router.get(
+    '/v1/movie/genre/:id',
+    verifyAuthenticationMiddleware.verifyAuthentication,
+    movieController.listGenresByMovie
+  );
+  router.get(
+    '/v1/movie/cast/:id',
+    verifyAuthenticationMiddleware.verifyAuthentication,
+    movieController.listCastByMovie
+  );
+
   router.post(
     '/v1/movie/:id/vote',
     verifyAuthenticationMiddleware.verifyAuthentication,

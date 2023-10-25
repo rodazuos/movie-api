@@ -13,7 +13,7 @@ module.exports = (dbContext) => {
   };
 
   const getById = async (idMovie, idGenre) => {
-    const whereConditions ={ [Op.and]: [{ idMovie }, { idGenre }] };
+    const whereConditions = { [Op.and]: [{ idMovie }, { idGenre }] };
 
     const queryResult = await model.findOne({ where: whereConditions });
 

@@ -96,9 +96,7 @@ module.exports = (dbContext) => {
       query = `select count(distinct id) as total`;
     }
 
-    query =
-      query +
-      ` from users `;
+    query = query + ` from users `;
 
     if (filters) {
       let queryFilters = [];
@@ -110,10 +108,10 @@ module.exports = (dbContext) => {
         query = query + ' where';
         query = query + queryFilters.join(' AND ');
       }
-      
+
       const limit = filters.limit ? filters.limit : 10;
       const offset = filters.page && filters.page > 1 ? (filters.page - 1) * limit : 0;
-      
+
       if (!hasTotal) {
         query = query + ` order by name ASC limit ${limit} offset ${offset};`;
       }

@@ -2,8 +2,8 @@
 
 const crypto = require('crypto');
 
-const chave = "movie-service-api-key-crypto";
-const chaveIV = "movie-service-api-iv";
+const chave = 'movie-service-api-key-crypto';
+const chaveIV = 'movie-service-api-iv';
 
 const SWD_SECRET = crypto.scryptSync(chave, 'salt', 16).toString('hex');
 const SWD_IV = crypto.scryptSync(chaveIV, 'salt', 16).toString('hex');

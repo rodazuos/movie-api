@@ -127,25 +127,25 @@ module.exports = ({ repository }) => {
         idMovie
       };
 
-      const result = await MovieDomain.addGenreMovie({ modelGenreMovie, movieGenreRepository});
+      const result = await MovieDomain.addGenreMovie({ modelGenreMovie, movieGenreRepository });
       ctx.status = OK;
       ctx.body = result;
     } catch (error) {
       Logger.error(error);
       throw error;
     }
-  }
+  };
 
   const deleteGenreMovie = async (ctx) => {
     try {
       const { id } = ctx.request.params;
-      await MovieDomain.deleteGenreMovie({ id, movieGenreRepository});
+      await MovieDomain.deleteGenreMovie({ id, movieGenreRepository });
       ctx.status = OK;
     } catch (error) {
       Logger.error(error);
       throw error;
     }
-  }
+  };
 
   const addCastMovie = async (ctx) => {
     try {
@@ -155,25 +155,49 @@ module.exports = ({ repository }) => {
         ...dataValid
       };
 
-      const result = await MovieDomain.addCastMovie({ modelCastMovie, movieCastRepository});
+      const result = await MovieDomain.addCastMovie({ modelCastMovie, movieCastRepository });
       ctx.status = OK;
       ctx.body = result;
     } catch (error) {
       Logger.error(error);
       throw error;
     }
-  }
+  };
 
   const deleteCastMovie = async (ctx) => {
     try {
       const { id } = ctx.request.params;
-      await MovieDomain.deleteCastMovie({ id, movieCastRepository});
+      await MovieDomain.deleteCastMovie({ id, movieCastRepository });
       ctx.status = OK;
     } catch (error) {
       Logger.error(error);
       throw error;
     }
-  }
+  };
+
+  const listGenresByMovie = async (ctx) => {
+    try {
+      const { id } = ctx.request.params;
+      const result = await MovieDomain.listGenresByMovie({ id, movieGenreRepository });
+      ctx.status = OK;
+      ctx.body = result;
+    } catch (error) {
+      Logger.error(error);
+      throw error;
+    }
+  };
+
+  const listCastByMovie = async (ctx) => {
+    try {
+      const { id } = ctx.request.params;
+      const result = await MovieDomain.listCastByMovie({ id, movieCastRepository });
+      ctx.status = OK;
+      ctx.body = result;
+    } catch (error) {
+      Logger.error(error);
+      throw error;
+    }
+  };
 
   return {
     getMovie,
@@ -185,6 +209,8 @@ module.exports = ({ repository }) => {
     addGenreMovie,
     deleteGenreMovie,
     addCastMovie,
-    deleteCastMovie
+    deleteCastMovie,
+    listGenresByMovie,
+    listCastByMovie
   };
 };
