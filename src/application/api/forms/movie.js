@@ -39,7 +39,7 @@ const sanitizeCreateCastMovie = async (data) => {
 
 const sanitizeUpdateMovie = async (data) => {
   const schema = Joi.object({
-    id: Joi.number(),
+    id: Joi.number().required(),
     title: Joi.string().required(),
     originalTitle: Joi.string(),
     releaseYear: Joi.string().required(),

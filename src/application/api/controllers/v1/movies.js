@@ -57,15 +57,15 @@ module.exports = ({ repository }) => {
   const updateMovie = async (ctx) => {
     try {
       const { id } = ctx.request.params;
-      const dataValid = await sanitizeUpdateMovie(ctx.request.body);
       const movie = {
         id,
-        ...dataValid
+        ...ctx.request.body
       };
+      const dataValid = await sanitizeUpdateMovie(movie);
 
       const result = await MovieDomain.updateMovie({
         movieRepository,
-        movie
+        dataValid
       });
 
       ctx.status = OK;
