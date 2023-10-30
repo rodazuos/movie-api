@@ -1,32 +1,28 @@
-const { sanitizeLogin } = require('../../../../../../src/application/api/forms/login');
+const { sanitizeUpdatePassword, sanitizeFiltersListUser } = require('../../../../../../src/application/api/forms/user');
 const { BadRequestException } = require('../../../../../../src/infrastructure/errors')
 
 describe('Application -> API V1 -> Forms -> Login', () => {
     describe('sanitizeLogin', () => {
-        it('Should validate cpf and password', () => {
-            const form = { cpf: '99999999999', password: '123456'};
+        it('Should validate update password', () => {
+            const form = { password: '123456'};
 
-            expect(sanitizeLogin(form)).toBeTruthy();
+            expect(sanitizeUpdatePassword(form)).toBeTruthy();
         });
 
-        it('Should error validate cpf', async () => {
-            const form = { cp: '99999999999', password: '123456'};
+        it('Should error validate update password', async () => {
+            const form = { passwod: '123456'};
 
             try {
-                await sanitizeLogin(form);
-            } catch (error) {
-                expect(error).toEqual(BadRequestException('"cpf" is required'));
-            }
-        });
-
-        it('Should error validate password', async () => {
-            const form = { cpf: '99999999999', passwor: '123456'};
-
-            try {
-                await sanitizeLogin(form);
+                await sanitizeUpdatePassword(form);
             } catch (error) {
                 expect(error).toEqual(BadRequestException('"password" is required'));
             }
+        });
+
+        it('Should validate user list filter', () => {
+            const form = { name: 'name', limit: 10, page: 1};
+
+            expect(sanitizeFiltersListUser(form)).toBeTruthy();
         });
     })
 });
