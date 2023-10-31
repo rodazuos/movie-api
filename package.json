@@ -10,7 +10,8 @@
     "format:write": "prettier --write .",
     "lint:check": "eslint .",
     "lint:fix": "eslint --fix .",
-    "test": "jest --coverage --passWithNoTests"
+    "test": "jest --coverage --passWithNoTests",
+    "test-no-console": "jest --coverage --passWithNoTests --silent"
   },
   "husky": {
     "hooks": {

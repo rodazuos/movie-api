@@ -58,6 +58,7 @@ Serviço para catalogar e classificar filmes.
 | lint:check   | Análise do código                                   |
 | lint:fix     | Corrige problemas no código                         |
 | test         | Executa os testes                                   |
+| test-no-console | Executa os testes removendo qualquer console.log |
 
 <br>
 
